@@ -280,10 +280,10 @@ void tftInit(void) {
 	tftSetDirection(ILI9341_DIRECTION_0);
 
 	// 清除屏幕
-	tftClear(COLOR_YELLOW);
+	tftClear(COLOR_GREEN);
 	tftSetWindows(0, 0, 10, 20);
 	for (size_t index = 0; index < 200; ++index) {
-		tft_write_data(COLOR_GREEN);
+		tft_write_data(COLOR_RED);
 	}
 
 	// 打开背光
