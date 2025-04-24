@@ -1,0 +1,6 @@
+build
+assets.c
+assets.h
+.vscode
+SDL2.dll
+utils_bin
