@@ -21,7 +21,7 @@ typedef enum {
 } etftdirection;
 
 void tftInit(void);
-void tftSetWindows(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
+void tftSetWindows(uint16_t x_start,uint16_t y_start,uint16_t x_end,uint16_t y_end);
 void tftSetDirection(etftdirection dir);
 void tftClear(uint16_t color);
 

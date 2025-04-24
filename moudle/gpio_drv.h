@@ -9,19 +9,19 @@
 
 //SPI
 #define SPI_PORT     spi1
-#define SPI_BAUDRATE 64*1000*1000
+#define SPI_BAUDRATE 1*1000*1000
 #define PIN_MISO     12
 #define PIN_CS       13
-#define PIN_SCK      10
+#define PIN_SCL      10
 #define PIN_MOSI     15
 #define PIN_BK       9
 #define PIN_DC       14
 #define PIN_RST      11
 
 //屏幕尺寸
-#define ILI9341_WIDTH 240
-#define ILI9341_HEIGHT 320
-#define ILI9341_SIZE (ILI9341_WIDTH* ILI9341_HEIGHT)
+#define LCD_WIDTH 80
+#define LCD_HEIGHT 160
+#define ILI9341_SIZE (LCD_WIDTH* LCD_HEIGHT)
 
 //颜色
 #define RGB565(r,g,b)  (((r&0xF8)<<8)|((g&0xFC)<<3)|((b&0xF8)>>3))

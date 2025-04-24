@@ -63,10 +63,33 @@
 #define ILI9341_ENABLE3G    0xF2 // Enable 3 gamma control
 #define ILI9341_PUMPRTCTL   0xF7 // Pump ratio control
 
+
+
+#define ST7735S_SWRESET 0x01
+#define ST7735S_SLPOUT  0x11
+#define ST7735S_FRMCTR1 0xB1
+#define ST7735S_FRMCTR2 0xB2
+#define ST7735S_FRMCTR3 0xB3
+#define ST7735S_INVCTR  0xB4
+#define ST7735S_PWCTR1  0xC0
+#define ST7735S_PWCTR2  0xC1
+#define ST7735S_PWCTR3  0xC2
+#define ST7735S_PWCTR4  0xC3
+#define ST7735S_PWCTR5  0xC4
+#define ST7735S_VMCTR1  0xC5
+#define ST7735S_INVOFF  0x20
+#define ST7735S_MADCTL  0x36
+#define ST7735S_COLMOD  0x3A
+#define ST7735S_DISPON  0x29
+#define ST7735S_CASET   0x2A
+#define ST7735S_RASET   0x2B
+#define ST7735S_RAMWR   0x2C
+
+
 // 寄存器0x36掩码
-#define MADCTL_MY 0x80  // 纵向交换
+#define MADCTL_MY 0x20  // 纵向交换
 #define MADCTL_MX 0x40  // 横向交换
-#define MADCTL_MV 0x20  // 纵横交换
+#define MADCTL_MV 0x80  // 纵横交换
 #define MADCTL_ML 0x10  // 从下到上刷新
 #define MADCTL_RGB 0x00 // RGB
 #define MADCTL_BGR 0x08 // BGR
@@ -74,8 +97,8 @@
 
 // 全局变量
 sTftDevice tftDevice = {
-	.width = ILI9341_WIDTH,
-	.height = ILI9341_HEIGHT
+	.width = LCD_WIDTH,
+	.height = LCD_HEIGHT
 };
 
 
@@ -101,6 +124,16 @@ static inline void tft_write_cmd(const uint8_t* cmd, size_t len) {
 	}
 }
 
+
+static inline void tft_write_data8(const uint8_t data) {
+    tftsetdcandcs(1, 0);  // DC=1表示数据，CS拉低开始传输
+
+    spi_write_blocking(SPI_PORT, &data, 1);
+
+    tftsetdcandcs(1, 1);  // CS拉高结束传输
+}
+
+
 static inline void tft_write_data(const uint16_t data) {
 	tftsetdcandcs(1, 0);
 
@@ -121,64 +154,137 @@ void tftInit(void) {
 	gpio_put(PIN_RST, false);
 	sleep_ms(100);
 	gpio_put(PIN_RST, true);
+	sleep_ms(50);
+	
+	// tft_write_cmd(&cmd,1); // SWRESET Software reset
+	uint8_t cmd = 0x11;
+	tft_write_cmd(&cmd, 1); //Sleep out
+	sleep_ms(120);
+	cmd = 0x21;
+	tft_write_cmd(&cmd, 1);
+	cmd = 0x21;
+	tft_write_cmd(&cmd, 1);
+	//----ST7735S Frame Rate---------------------//
+	cmd = 0xB1;
+	tft_write_cmd(&cmd, 1); //Frame rate 80Hz Frame rate=333k/((RTNA + 20) x (LINE + FPA + BPA))
+	tft_write_data8(0x05);
+	tft_write_data8(0x3A);
+	tft_write_data8(0x3A);
+	cmd = 0xB2;
+	tft_write_cmd(&cmd, 1); //Frame rate 80Hz
+	tft_write_data8(0x05);
+	tft_write_data8(0x3A);
+	tft_write_data8(0x3A);
+	cmd = 0xB3;
+	tft_write_cmd(&cmd, 1);; //Frame rate 80Hz
+	tft_write_data8(0x05);
+	tft_write_data8(0x3A);
+	tft_write_data8(0x3A);
+	tft_write_data8(0x05);
+	tft_write_data8(0x3A);
+	tft_write_data8(0x3A);
+
+	//------------------------------------Display Inversion Control-----------------------------------------//
+	cmd = 0xB4;
+	tft_write_cmd(&cmd, 1);
+	tft_write_data8(0x03);
+
+	//------------------------------------ST7735S Power Sequence-----------------------------------------//
+	cmd = 0xC0;
+	tft_write_cmd(&cmd, 1);
+	// tft_write_cmd(0xC0,1);
+	tft_write_data8(0x62);
+	tft_write_data8(0x02);
+	tft_write_data8(0x04);
+	cmd = 0xC1;
+	tft_write_cmd(&cmd, 1);
+	// tft_write_cmd(0xC1,1);
+	tft_write_data8(0xC0);
+	cmd = 0xC2;
+	tft_write_cmd(&cmd, 1);
+	// tft_write_cmd(0xC2,1);
+	tft_write_data8(0x0D);
+	tft_write_data8(0x00);
+	cmd = 0xC3;
+	tft_write_cmd(&cmd, 1);
+	// tft_write_cmd(0xC3,1);
+	tft_write_data8(0x8D);
+	tft_write_data8(0x6A);
+	cmd = 0xC4;
+	tft_write_cmd(&cmd, 1);
+	// tft_write_cmd(0xC4,1);
+	tft_write_data8(0x8D);
+	tft_write_data8(0xEE);
+	//---------------------------------End ST7735S Power Sequence---------------------------------------//
+	cmd = 0xC5;
+	tft_write_cmd(&cmd, 1);
+	// tft_write_cmd(0xC5,1); //VCOM
+	tft_write_data8(0x0E);
+	cmd = 0xE0;
+	tft_write_cmd(&cmd, 1);
+	// tft_write_cmd(0xE0);
+	tft_write_data8(0x10);
+	tft_write_data8(0x0E);
+	tft_write_data8(0x02);
+	tft_write_data8(0x03);
+	tft_write_data8(0x0E);
+	tft_write_data8(0x07);
+	tft_write_data8(0x02);
+	tft_write_data8(0x07);
+	tft_write_data8(0x0A);
+	tft_write_data8(0x12);
+	tft_write_data8(0x27);
+	tft_write_data8(0x37);
+	tft_write_data8(0x00);
+	tft_write_data8(0x0D);
+	tft_write_data8(0x0E);
+	tft_write_data8(0x10);
+
+	cmd = 0xE1;
+	tft_write_cmd(&cmd, 1);
+	// tft_write_cmd(0xE1);
+	tft_write_data8(0x10);
+	tft_write_data8(0x0E);
+	tft_write_data8(0x03);
+	tft_write_data8(0x03);
+	tft_write_data8(0x0F);
+	tft_write_data8(0x06);
+	tft_write_data8(0x02);
+	tft_write_data8(0x08);
+	tft_write_data8(0x0A);
+	tft_write_data8(0x13);
+	tft_write_data8(0x26);
+	tft_write_data8(0x36);
+	tft_write_data8(0x00);
+	tft_write_data8(0x0D);
+	tft_write_data8(0x0E);
+	tft_write_data8(0x10);
+
+	cmd = 0x3a;
+	tft_write_cmd(&cmd, 1);
+	// tft_write_cmd(0x3A);
+	tft_write_data8(0x05);
+
+	// cmd = 0x36;
+	// tft_write_cmd(&cmd, 1);
+	// // tft_write_cmd(0x36);
+	// tft_write_data8(0x08);//
+	// sleep_ms(50);
+	cmd = 0x29;
+	tft_write_cmd(&cmd, 1);
+	// tft_write_cmd(0x29);
 	sleep_ms(100);
-
-	// 发送初始化命令
-	// uint8_t cmd[] = {0x36, 0x48};
-	// tft_write_cmd(cmd, 2);
-
-	// 数量， 命令， 参数...
-	// 如果数量为0x81，则延时150ms
-	const uint8_t initCmd[] = {
-		4, ILI9341_PWCTLB, 0x00, 0xC1, 0x30,
-		5, ILI9341_PWONSEQCTL, 0x64, 0x03, 0x12, 0x81,
-		4, ILI9341_DTCTLA, 0x85, 0x00, 0x78,
-		6, ILI9341_PWCTLA, 0x39, 0x2C, 0x00, 0x34, 0x02,
-		2, ILI9341_PUMPRTCTL, 0x20,
-		3, ILI9341_DTCTLB, 0x00, 0x00,
-		2, ILI9341_PWCTR1, 0x10,
-		2, ILI9341_PWCTR2, 0x00,
-		3, ILI9341_VMCTR1, 0x30, 0x30,
-		2, ILI9341_VMCTR2, 0xB7,
-		2, ILI9341_MADCTL, 0x48,
-		2, ILI9341_VSCRSADD, 0x00,
-		2, ILI9341_PIXFMT, 0x55,
-		3, ILI9341_FRMCTR1, 0x00, 0x1B,
-		4, ILI9341_DFUNCTR, 0x08, 0x82, 0x27,
-		2, ILI9341_ENABLE3G, 0x00,
-		2, ILI9341_GAMMASET, 0x01,
-		16, ILI9341_GMCTRP1, 0x0F, 0x2A, 0x28, 0x08, 0x0E,
-		0x08, 0x54, 0XA9, 0x43, 0x0A, 0x0F, 0x00, 0x00, 0x00, 0x00,
-		16, ILI9341_GMCTRN1, 0x00, 0x15, 0x17, 0x07, 0x11,
-		0x06, 0x2B, 0x56, 0x3C, 0x05, 0x10, 0x0F, 0x3F, 0x3F, 0x0F,
-		0x81, ILI9341_SLPOUT,
-		0x81, ILI9341_DISPON,
-		0x00
-	};
-
-	const uint8_t* cmdIndex = initCmd;
-	uint8_t count, temp;
-
-	while (*cmdIndex) {
-		temp = *cmdIndex++;
-		count = temp & 0x7F;
-
-		tft_write_cmd(cmdIndex, count);
-		cmdIndex += count;
-
-		if (0x81 == temp) {
-			sleep_ms(150);
-		}
-	}
-
 
 
 	// 设置屏幕方向
 	tftSetDirection(ILI9341_DIRECTION_0);
 
 	// 清除屏幕
-	tftClear(COLOR_BLUE);
-
+	tftClear(COLOR_YELLOW);
+	tftSetWindows(0, 0, 10, 20);
+	for (size_t index = 0; index < 200; ++index) {
+		tft_write_data(COLOR_GREEN);
+	}
 
 	// 打开背光
 	// gpio_put(PIN_BK, true);
@@ -197,32 +303,24 @@ void tftInit(void) {
 	pwm_set_enabled(blPwmSlice, true);
 }
 
-void tftSetWindows(uint16_t x, uint16_t y, uint16_t width, uint16_t height) {
+void tftSetWindows(uint16_t x_start,uint16_t y_start,uint16_t x_end,uint16_t y_end) {
 	uint16_t temp;
 
 	// 横向
-	temp = x + width;
-	if (temp > tftDevice.width) {
-		temp = tftDevice.width;
-	}
-	--temp;
+
 
 	uint8_t cmd = 0x2a;
 	tft_write_cmd(&cmd, 1);
-	tft_write_data(x);
-	tft_write_data(temp);
+	tft_write_data(x_start);
+	tft_write_data(x_end);
 
 	// 纵向
-	temp = y + height;
-	if (temp > tftDevice.height) {
-		temp = tftDevice.height;
-	}
-	--temp;
+
 
 	cmd = 0x2b;
 	tft_write_cmd(&cmd, 1);
-	tft_write_data(y);
-	tft_write_data(temp);
+	tft_write_data(y_start+0x19);
+	tft_write_data(y_end+0x19);
 
 	// 开始写入屏幕
 	cmd = 0x2c;
@@ -234,26 +332,26 @@ void tftSetDirection(etftdirection dir) {
 
 	switch (dir) {
 		case ILI9341_DIRECTION_0:
-			tftDevice.width = ILI9341_WIDTH;
-			tftDevice.height = ILI9341_HEIGHT;
+			tftDevice.width = LCD_WIDTH;
+			tftDevice.height = LCD_HEIGHT;
 			temp = MADCTL_MX;
 			break;
 
 		case ILI9341_DIRECTION_90:
-			tftDevice.width = ILI9341_HEIGHT;
-			tftDevice.height = ILI9341_WIDTH;
+			tftDevice.width = LCD_HEIGHT;
+			tftDevice.height = LCD_WIDTH;
 			temp = MADCTL_MV;
 			break;
 
 		case ILI9341_DIRECTION_180:
-			tftDevice.width = ILI9341_WIDTH;
-			tftDevice.height = ILI9341_HEIGHT;
+			tftDevice.width = LCD_WIDTH;
+			tftDevice.height = LCD_HEIGHT;
 			temp = MADCTL_MY;
 			break;
 
 		case ILI9341_DIRECTION_270:
-			tftDevice.width = ILI9341_HEIGHT;
-			tftDevice.height = ILI9341_WIDTH;
+			tftDevice.width = LCD_HEIGHT;
+			tftDevice.height = LCD_WIDTH;
 			temp = MADCTL_MY | MADCTL_MX | MADCTL_MV;
 			break;
 
@@ -271,7 +369,7 @@ void tftSetDirection(etftdirection dir) {
 
 void tftClear(uint16_t color) {
 	size_t fillSize = ILI9341_SIZE;
-
+	tftSetWindows(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1);
 	for (size_t index = 0; index < fillSize; ++index) {
 		tft_write_data(color);
 	}

@@ -80,22 +80,16 @@ void lcd_handle(uevt_t* evt) {
 		case UEVT_TIMER_10MS:
 			// t_10ms++;
 			// if(t_10ms % 100 == 0) {
-			// 	for(int i = 0; i < 100; i++) {
-			// 		for(int j = 0; j < 100; j++) {
-			// 			tftplot(i, j, COLOR_RED);
+			// 	for(int i = 0; i < 80; i++) {
+			// 		for(int j = 0; j < 80; j++) {
+			// 			tftplot(i, j, COLOR_GREEN);
 			// 		}
 			// 	}
 			// }
 			break;
 		case UEVT_TIMER_100MS:
 			t_10ms++;
-			if(t_10ms % 100 == 0) {
-				for(int i = 0; i < 100; i++) {
-					for(int j = 0; j < 100; j++) {
-						tftplot(i, j, COLOR_RED);
-					}
-				}
-			}
+			
 			break;
 	}
 }
@@ -127,7 +121,7 @@ void button_handle(uevt_t* evt) {
 
 			break;
 		case UEVT_SYS_SLEEP:
-			
+
 			break;
 	}
 }
@@ -135,7 +129,7 @@ void button_handle(uevt_t* evt) {
 
 
 void moudle_init(void) {
-	user_event_handler_regist(oled_handle);
+	// user_event_handler_regist(oled_handle);
 	user_event_handler_regist(button_handle);
 	user_event_handler_regist(lcd_handle);
 	user_event_handler_regist(timer_handle);

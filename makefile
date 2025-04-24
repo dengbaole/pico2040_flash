@@ -12,9 +12,10 @@ assets_oled:
 	./utils_bin/p2a-win-amd64.exe -in ./moudle/ui/oled -out ./moudle/oled_image
 	
 
-pico:clean
+pico:clean 
 	cmake . -G Ninja -B$(BUILD_DIR) -S.
 	ninja -C $(BUILD_DIR)
+	copy $(BUILD_DIR)\pico2040.uf2 G:\
 
 clean:
 		@echo "Cleaning up build directory..."
@@ -28,3 +29,5 @@ rebuild: clean pico
 
 format:
 	./utils_bin/astyle.exe --project="./utils_bin/.astylerc" -r **.c,**.h --ignore-exclude-errors --exclude=_build --exclude=utils_bin --exclude=dist --exclude=utils -v -Q
+download:
+	copy $(BUILD_DIR)\pico2040.uf2 G:\

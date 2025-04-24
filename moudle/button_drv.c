@@ -2,14 +2,14 @@
 
 
 void button_callback(unsigned int gpio, uint32_t events) {
-    if (gpio == KEY2_PIN && (events & GPIO_IRQ_EDGE_FALL)) {
-        // 按键2按下
-        uevt_bc_e(BUTTON2_ON);
-    }
-    if (gpio == KEY1_PIN && (events & GPIO_IRQ_EDGE_FALL)) {
-        // 按键1按下
-        uevt_bc_e(BUTTON1_ON);
-    }
+	if (gpio == KEY2_PIN && (events & GPIO_IRQ_EDGE_FALL)) {
+		// 按键2按下
+		uevt_bc_e(BUTTON2_ON);
+	}
+	if (gpio == KEY1_PIN && (events & GPIO_IRQ_EDGE_FALL)) {
+		// 按键1按下
+		uevt_bc_e(BUTTON1_ON);
+	}
 }
 
 
@@ -38,13 +38,13 @@ void button_init(void) {
 
 
 void button_scan(void) {
-    // 检查按键状态
-    if (gpio_get(KEY2_PIN) == 0) {
-        // 按键2按下
-        uevt_bc_e(BUTTON2_ON);
-    }
-    if (gpio_get(KEY1_PIN) == 0) {
-        // 按键1按下
-        uevt_bc_e(BUTTON1_ON);
-    }
+	// 检查按键状态
+	if (gpio_get(KEY2_PIN) == 0) {
+		// 按键2按下
+		uevt_bc_e(BUTTON2_ON);
+	}
+	if (gpio_get(KEY1_PIN) == 0) {
+		// 按键1按下
+		uevt_bc_e(BUTTON1_ON);
+	}
 }
