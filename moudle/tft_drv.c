@@ -281,10 +281,6 @@ void tftInit(void) {
 
 	// 清除屏幕
 	tftClear(COLOR_WHITE);
-	tftSetWindows(0, 0, 10, 20);
-	for (size_t index = 0; index < 200; ++index) {
-		tft_write_data(COLOR_BLUE);
-	}
 
 	// 打开背光
 	// gpio_put(PIN_BK, true);
