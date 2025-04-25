@@ -126,11 +126,11 @@ static inline void tft_write_cmd(const uint8_t* cmd, size_t len) {
 
 
 static inline void tft_write_data8(const uint8_t data) {
-    tftsetdcandcs(1, 0);  // DC=1表示数据，CS拉低开始传输
+	tftsetdcandcs(1, 0);  // DC=1表示数据，CS拉低开始传输
 
-    spi_write_blocking(SPI_PORT, &data, 1);
+	spi_write_blocking(SPI_PORT, &data, 1);
 
-    tftsetdcandcs(1, 1);  // CS拉高结束传输
+	tftsetdcandcs(1, 1);  // CS拉高结束传输
 }
 
 
@@ -155,7 +155,7 @@ void tftInit(void) {
 	sleep_ms(100);
 	gpio_put(PIN_RST, true);
 	sleep_ms(50);
-	
+
 	// tft_write_cmd(&cmd,1); // SWRESET Software reset
 	uint8_t cmd = 0x11;
 	tft_write_cmd(&cmd, 1); //Sleep out
@@ -299,20 +299,20 @@ void tftInit(void) {
 	pwm_set_enabled(blPwmSlice, true);
 }
 
-void tftSetWindows(uint16_t x_start,uint16_t y_start,uint16_t x_end,uint16_t y_end) {
+void tftSetWindows(uint16_t x_start, uint16_t y_start, uint16_t x_end, uint16_t y_end) {
 	uint16_t temp;
 
 	// 横向
 	uint8_t cmd = 0x2a;
 	tft_write_cmd(&cmd, 1);
-	tft_write_data(x_start+24);
-	tft_write_data(x_end+24);
+	tft_write_data(x_start + 24);
+	tft_write_data(x_end + 24);
 
 	// 纵向
 	cmd = 0x2b;
 	tft_write_cmd(&cmd, 1);
-	tft_write_data(y_start+0);
-	tft_write_data(y_end+0);
+	tft_write_data(y_start + 0);
+	tft_write_data(y_end + 0);
 
 	// 开始写入屏幕
 	cmd = 0x2c;
@@ -326,7 +326,7 @@ void tftSetDirection(etftdirection dir) {
 		case ILI9341_DIRECTION_0:
 			tftDevice.width = LCD_WIDTH;
 			tftDevice.height = LCD_HEIGHT;
-			temp = MADCTL_MX| MADCTL_MY;
+			temp = MADCTL_MX | MADCTL_MY;
 			break;
 
 		case ILI9341_DIRECTION_90:
@@ -383,15 +383,12 @@ void tft_set_bl_brightness(uint16_t brightness) {
 }
 
 
-void LCD_ShowPicture2(uint16_t x, uint16_t y, const sBITMAP* pic) {
+void LCD_ShowPicture(uint16_t x, uint16_t y, const sBITMAP* pic) {
 	uint16_t i, j;
 	uint32_t k = 0;
 	tftSetWindows(x, y, x + pic->w - 1, y + pic->h - 1);
-	for(i = 0; i < pic->h; i++) {
-		for(j = 0; j < pic->w; j++) {
-			tft_write_data8(pic->map[k * 2]);
-			tft_write_data8(pic->map[k * 2 + 1]);
-			k++;
-		}
-	}
+
+	tftsetdcandcs(1, 0);
+	spi_write_blocking(SPI_PORT, pic->map, pic->h * pic->w * 2);
+	tftsetdcandcs(1, 1);
 }

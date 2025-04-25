@@ -21,7 +21,7 @@ typedef enum {
 } etftdirection;
 
 void tftInit(void);
-void tftSetWindows(uint16_t x_start,uint16_t y_start,uint16_t x_end,uint16_t y_end);
+void tftSetWindows(uint16_t x_start, uint16_t y_start, uint16_t x_end, uint16_t y_end);
 void tftSetDirection(etftdirection dir);
 void tftClear(uint16_t color);
 
@@ -29,5 +29,5 @@ void tftplot(uint16_t x, uint16_t y, uint16_t color);
 void tftdrawarray(uint16_t* src, size_t len);
 
 void tft_set_bl_brightness(uint16_t brightness);
-void LCD_ShowPicture2(uint16_t x, uint16_t y, const sBITMAP* pic);
+void LCD_ShowPicture(uint16_t x, uint16_t y, const sBITMAP* pic);
 #endif // !1

@@ -21,5 +21,10 @@ void user_spi_init(void) {
 	gpio_set_function(PIN_MISO, GPIO_FUNC_SPI);
 	gpio_set_function(PIN_SCL, GPIO_FUNC_SPI);
 	gpio_set_function(PIN_MOSI, GPIO_FUNC_SPI);
-
 }
+
+
+
+
+
+

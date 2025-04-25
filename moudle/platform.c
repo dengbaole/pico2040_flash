@@ -80,12 +80,12 @@ void lcd_handle(uevt_t* evt) {
 		case UEVT_TIMER_10MS:
 			t_10ms++;
 			if(t_10ms % 3 == 0) {
-				LCD_ShowPicture2(0,0,charge_array[t_10ms/3%30]);	
+				LCD_ShowPicture(0, 0, charge_array[t_10ms / 3 % 30]);
 			}
 			break;
 		case UEVT_TIMER_100MS:
 			t_10ms++;
-			
+
 			break;
 	}
 }
