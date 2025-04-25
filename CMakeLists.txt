@@ -2,6 +2,7 @@
 
 cmake_minimum_required(VERSION 3.13)
 
+add_definitions(-DG_LOG_ENABLED=1 -DEVT_LOG_ENABLED=0)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
@@ -42,12 +43,16 @@ add_executable(pico2040
 pico_set_program_name(pico2040 "pico2040")
 pico_set_program_version(pico2040 "0.1")
 
-pico_enable_stdio_uart(pico2040 1)
-pico_enable_stdio_usb(pico2040 0)
+# pico_enable_stdio_uart(pico2040 1)
+# pico_enable_stdio_usb(pico2040 0)
+pico_enable_stdio_usb(pico2040 1)
+pico_enable_stdio_uart(pico2040 0)
 
 # Add the standard library to the build
 target_link_libraries(pico2040
         pico_stdlib
+        tinyusb_device
+        tinyusb_board
         )
 
 # Add the standard include files to the build

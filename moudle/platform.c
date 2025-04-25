@@ -1,6 +1,11 @@
 #include "platform.h"
 
-
+#if G_LOG_ENABLED == 1
+char log_cache[128];
+char log_buffer[512];
+uint16_t log_ptr = 0;
+int16_t log_length;
+#endif
 
 void oled_handle(uevt_t* evt) {
 	static uint16_t t_10ms = 0;
@@ -76,11 +81,14 @@ void lcd_handle(uevt_t* evt) {
 	switch(evt->evt_id) {
 		case UEVT_SYS_BOOT:
 			tftInit();
+			tusb_init();
+			cdc_log_init();
 			break;
 		case UEVT_TIMER_10MS:
 			t_10ms++;
 			if(t_10ms % 3 == 0) {
 				LCD_ShowPicture(0, 0, charge_array[t_10ms / 3 % 30]);
+				LOG_RAW("cdc_log_init\n");
 			}
 			break;
 		case UEVT_TIMER_100MS:

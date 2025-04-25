@@ -280,7 +280,7 @@ void tftInit(void) {
 	tftSetDirection(ILI9341_DIRECTION_0);
 
 	// 清除屏幕
-	tftClear(COLOR_WHITE);
+	tftClear(COLOR_BLACK);
 
 	// 打开背光
 	// gpio_put(PIN_BK, true);

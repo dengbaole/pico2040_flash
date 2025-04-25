@@ -8,6 +8,9 @@ int main(void) {
 	uevt_bc_e(UEVT_SYS_BOOT);
 	while (true) {
 		app_sched_execute();
+		tud_task();
+		cdc_task();
+		__wfi();
 	}
 	return 0;
 }

@@ -28,6 +28,10 @@
 #include "scheduler/uevent.h"
 #include "scheduler/scheduler.h"
 
+#include "tusb.h"
+#include "usb_func.h"
+#include "tusb_config.h"
+
 #include "bitmap.h"
 #include "tft_drv.h"
 #include "gpio_drv.h"
@@ -44,6 +48,27 @@
 
 void moudle_init(void);
 
+
+#if G_LOG_ENABLED == 1
+extern char log_cache[128];
+extern char log_buffer[512];
+extern uint16_t log_ptr;
+extern int16_t log_length;
+	#define LOG_RAW(...) \
+		do { \
+			log_length = sprintf(log_cache, __VA_ARGS__) + 1; \
+			if(log_length > 1) { \
+				if(log_ptr + log_length >= 512) { \
+					log_ptr = 0; \
+				} \
+				memcpy(log_buffer + log_ptr, log_cache, log_length); \
+				cdc_log_print(log_buffer + log_ptr); \
+				log_ptr += log_length; \
+			} \
+		} while(0);
+#else
+	#define LOG_RAW(...)
+#endif
 
 #define UEVT_APP_BASE (0xF500)
 #define UEVT_APP_NEWSTATE (UEVT_APP_BASE | 0x01)
