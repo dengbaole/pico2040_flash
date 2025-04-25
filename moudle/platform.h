@@ -28,6 +28,7 @@
 #include "scheduler/uevent.h"
 #include "scheduler/scheduler.h"
 
+#include "bitmap.h"
 #include "tft_drv.h"
 #include "gpio_drv.h"
 #include "ssd1306_i2c.h"
@@ -35,8 +36,9 @@
 #include "ssd1306_font.h"
 #include "spi_drv.h"
 #include "timer_drv.h"
-#include "bitmap.h"
+
 #include "oled_image.h"
+#include "tft_image.h"
 #include "button_drv.h"
 
 

@@ -29,4 +29,5 @@ void tftplot(uint16_t x, uint16_t y, uint16_t color);
 void tftdrawarray(uint16_t* src, size_t len);
 
 void tft_set_bl_brightness(uint16_t brightness);
+void LCD_ShowPicture2(uint16_t x, uint16_t y, const sBITMAP* pic);
 #endif // !1

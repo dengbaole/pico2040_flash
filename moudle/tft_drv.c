@@ -87,9 +87,9 @@
 
 
 // 寄存器0x36掩码
-#define MADCTL_MY 0x20  // 纵向交换
+#define MADCTL_MY 0x80  // 纵向交换
 #define MADCTL_MX 0x40  // 横向交换
-#define MADCTL_MV 0x80  // 纵横交换
+#define MADCTL_MV 0x20  // 纵横交换
 #define MADCTL_ML 0x10  // 从下到上刷新
 #define MADCTL_RGB 0x00 // RGB
 #define MADCTL_BGR 0x08 // BGR
@@ -160,10 +160,10 @@ void tftInit(void) {
 	uint8_t cmd = 0x11;
 	tft_write_cmd(&cmd, 1); //Sleep out
 	sleep_ms(120);
-	cmd = 0x21;
-	tft_write_cmd(&cmd, 1);
-	cmd = 0x21;
-	tft_write_cmd(&cmd, 1);
+	// cmd = 0x21;
+	// tft_write_cmd(&cmd, 1);
+	// cmd = 0x21;
+	// tft_write_cmd(&cmd, 1);
 	//----ST7735S Frame Rate---------------------//
 	cmd = 0xB1;
 	tft_write_cmd(&cmd, 1); //Frame rate 80Hz Frame rate=333k/((RTNA + 20) x (LINE + FPA + BPA))
@@ -280,10 +280,10 @@ void tftInit(void) {
 	tftSetDirection(ILI9341_DIRECTION_0);
 
 	// 清除屏幕
-	tftClear(COLOR_GREEN);
+	tftClear(COLOR_WHITE);
 	tftSetWindows(0, 0, 10, 20);
 	for (size_t index = 0; index < 200; ++index) {
-		tft_write_data(COLOR_RED);
+		tft_write_data(COLOR_BLUE);
 	}
 
 	// 打开背光
@@ -307,20 +307,16 @@ void tftSetWindows(uint16_t x_start,uint16_t y_start,uint16_t x_end,uint16_t y_e
 	uint16_t temp;
 
 	// 横向
-
-
 	uint8_t cmd = 0x2a;
 	tft_write_cmd(&cmd, 1);
-	tft_write_data(x_start);
-	tft_write_data(x_end);
+	tft_write_data(x_start+24);
+	tft_write_data(x_end+24);
 
 	// 纵向
-
-
 	cmd = 0x2b;
 	tft_write_cmd(&cmd, 1);
-	tft_write_data(y_start+0x19);
-	tft_write_data(y_end+0x19);
+	tft_write_data(y_start+0);
+	tft_write_data(y_end+0);
 
 	// 开始写入屏幕
 	cmd = 0x2c;
@@ -334,7 +330,7 @@ void tftSetDirection(etftdirection dir) {
 		case ILI9341_DIRECTION_0:
 			tftDevice.width = LCD_WIDTH;
 			tftDevice.height = LCD_HEIGHT;
-			temp = MADCTL_MX;
+			temp = MADCTL_MX| MADCTL_MY;
 			break;
 
 		case ILI9341_DIRECTION_90:
@@ -388,4 +384,18 @@ void tftdrawarray(uint16_t* src, size_t len) {
 
 void tft_set_bl_brightness(uint16_t brightness) {
 	pwm_set_chan_level(blPwmSlice, PWM_CHAN_B, brightness);
+}
+
+
+void LCD_ShowPicture2(uint16_t x, uint16_t y, const sBITMAP* pic) {
+	uint16_t i, j;
+	uint32_t k = 0;
+	tftSetWindows(x, y, x + pic->w - 1, y + pic->h - 1);
+	for(i = 0; i < pic->h; i++) {
+		for(j = 0; j < pic->w; j++) {
+			tft_write_data8(pic->map[k * 2]);
+			tft_write_data8(pic->map[k * 2 + 1]);
+			k++;
+		}
+	}
 }

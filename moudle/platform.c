@@ -78,14 +78,10 @@ void lcd_handle(uevt_t* evt) {
 			tftInit();
 			break;
 		case UEVT_TIMER_10MS:
-			// t_10ms++;
-			// if(t_10ms % 100 == 0) {
-			// 	for(int i = 0; i < 80; i++) {
-			// 		for(int j = 0; j < 80; j++) {
-			// 			tftplot(i, j, COLOR_GREEN);
-			// 		}
-			// 	}
-			// }
+			t_10ms++;
+			if(t_10ms % 3 == 0) {
+				LCD_ShowPicture2(0,0,smoke_array[t_10ms/3%54]);	
+			}
 			break;
 		case UEVT_TIMER_100MS:
 			t_10ms++;
