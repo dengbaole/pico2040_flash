@@ -1,10 +1,10 @@
 #include "platform.h"
 
 #if G_LOG_ENABLED == 1
-char log_cache[128];
-char log_buffer[512];
-uint16_t log_ptr = 0;
-int16_t log_length;
+	char log_cache[128];
+	char log_buffer[512];
+	uint16_t log_ptr = 0;
+	int16_t log_length;
 #endif
 
 
@@ -13,47 +13,46 @@ int16_t log_length;
 static char serial_fifo[16];
 static uint8_t serial_wp = 0;
 uint8_t serial_got(const char* str) {
-    uint8_t len = strlen(str);
-    for(uint8_t i = 1; i <= len; i++) {
-        if(serial_fifo[(serial_wp + (0x10 - i)) & 0xF] != str[len - i]) {
-            return 0;
-        }
-    }
-    return 1;
+	uint8_t len = strlen(str);
+	for(uint8_t i = 1; i <= len; i++) {
+		if(serial_fifo[(serial_wp + (0x10 - i)) & 0xF] != str[len - i]) {
+			return 0;
+		}
+	}
+	return 1;
 }
 #include "pico/bootrom.h"
 void serial_receive(uint8_t const* buffer, uint16_t bufsize) {
-    for(uint16_t i = 0; i < bufsize; i++) {
-        if((buffer[i] == 0x0A) || (buffer[i] == 0x0D)) {
-            if(serial_got("BOOTLOADER")) {
-                reset_usb_boot(0, 0);
-            }
-            if(serial_got("POWER_ON")) {
-                uevt_bc_e(UEVT_SYS_BOOT);
-            }
+	for(uint16_t i = 0; i < bufsize; i++) {
+		if((buffer[i] == 0x0A) || (buffer[i] == 0x0D)) {
+			if(serial_got("BOOTLOADER")) {
+				reset_usb_boot(0, 0);
+			}
+			if(serial_got("POWERON")) {
+				uevt_bc_e(TFT_POWER_ON);
+			}
 			if(serial_got("SMOKE")) {
-                uevt_bc_e(TFT_SMOKE);
-            }
+				uevt_bc_e(TFT_SMOKE);
+			}
 			if(serial_got("CHARGE")) {
-                uevt_bc_e(TFT_CHARGE);
-            }
+				uevt_bc_e(TFT_CHARGE);
+			}
 			if(serial_got("TIMEOUT")) {
-                uevt_bc_e(TFT_TIMEOUT);
-            }
+				uevt_bc_e(TFT_TIMEOUT);
+			}
 			if(serial_got("NOPOD")) {
-                uevt_bc_e(TFT_NOPOD);
-            }
+				uevt_bc_e(TFT_NOPOD);
+			}
 			if(serial_got("LOWPOWER")) {
-                uevt_bc_e(TFT_LOWPOWER);
-            }
+				uevt_bc_e(TFT_LOWPOWER);
+			}
 			if(serial_got("LOCK")) {
-                uevt_bc_e(TFT_LOCK);
-            }
-        } else {
-            serial_fifo[serial_wp++ & 0xF] = buffer[i];
-			LOG_RAW("%c\n", buffer[i]);
-        }
-    }
+				uevt_bc_e(TFT_LOCK);
+			}
+		} else {
+			serial_fifo[serial_wp++ & 0xF] = buffer[i];
+		}
+	}
 }
 
 
@@ -137,30 +136,30 @@ void lcd_handle(uevt_t* evt) {
 			break;
 		case UEVT_TIMER_10MS:
 			t_10ms++;
-			if(t_10ms % 3 == 0&&tft_state == 0) {
+			if(t_10ms % 3 == 0 && tft_state == 0) {
 				LCD_ShowPicture(0, 0, charge_array[t_10ms / 3 % 30]);
 			}
-			if(t_10ms % 3 == 0&&tft_state == 1) {
+			if(t_10ms % 3 == 0 && tft_state == 1) {
 				LCD_ShowPicture(0, 0, lock_array[t_10ms / 3 % 30]);
 			}
-			if(t_10ms % 3 == 0&&tft_state == 2) {
+			if(t_10ms % 3 == 0 && tft_state == 2) {
 				LCD_ShowPicture(0, 0, lowpower_array[t_10ms / 3 % 15]);
 			}
-			if(t_10ms % 3 == 0&&tft_state == 3) {
+			if(t_10ms % 3 == 0 && tft_state == 3) {
 				LCD_ShowPicture(0, 0, nopod_array[t_10ms / 3 % 25]);
 			}
-			if(t_10ms % 3 == 0&&tft_state == 4) {
+			if(t_10ms % 3 == 0 && tft_state == 4) {
 				LCD_ShowPicture(0, 0, power_on_array[t_10ms / 3 % 35]);
 			}
-			if(t_10ms % 3 == 0&&tft_state == 5) {
+			if(t_10ms % 3 == 0 && tft_state == 5) {
 				LCD_ShowPicture(0, 0, smoke_array[t_10ms / 3 % 54]);
 			}
-			if(t_10ms % 3 == 0&&tft_state == 6) {
+			if(t_10ms % 3 == 0 && tft_state == 6) {
 				LCD_ShowPicture(0, 0, timeout_array[t_10ms / 3 % 30]);
 			}
-			if(t_10ms % 100 == 0) {
-				LOG_RAW("%d\n",t_10ms/100);
-			}
+			// if(t_10ms % 100 == 0) {
+			// 	LOG_RAW("%d\n", t_10ms / 100);
+			// }
 			break;
 		case UEVT_TIMER_100MS:
 			t_10ms++;
