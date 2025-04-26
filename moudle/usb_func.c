@@ -24,15 +24,17 @@ void cdc_log_flush(void) {
 bool cdc_log_empty(void) {
 	return tud_cdc_n_write_available(0) >= log_depth_max;
 }
+
 void cdc_task(void) {
-	cdc_log_flush();
-	for(uint8_t itf = 0; itf < CFG_TUD_CDC; itf++) {
+	uint8_t itf;
+	for(itf = 0; itf < CFG_TUD_CDC; itf++) {
 		if(tud_cdc_n_available(itf)) {
 			uint8_t buf[64];
 			uint32_t count = tud_cdc_n_read(itf, buf, sizeof(buf));
 			serial_receive(buf, count);
 		}
 	}
+	cdc_log_flush();
 }
 
 static void serial_write(uint8_t itf, uint8_t buf[], uint32_t count) {

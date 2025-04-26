@@ -1,5 +1,10 @@
 #include "platform.h"
 
+
+
+
+
+
 int main(void) {
 	stdio_init_all();
 	app_sched_init();

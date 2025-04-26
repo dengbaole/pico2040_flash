@@ -2,7 +2,9 @@
 
 cmake_minimum_required(VERSION 3.13)
 
+add_definitions(-DPICO_FLASH_SIZE_BYTES=0x1000000)
 add_definitions(-DG_LOG_ENABLED=1 -DEVT_LOG_ENABLED=0)
+
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
