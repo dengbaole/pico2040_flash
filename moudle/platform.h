@@ -43,6 +43,7 @@
 
 #include "oled_image.h"
 #include "tft_image.h"
+#include "flash_drv.h"
 #include "button_drv.h"
 
 

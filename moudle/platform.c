@@ -127,10 +127,14 @@ void oled_handle(uevt_t* evt) {
 void lcd_handle(uevt_t* evt) {
 	static uint16_t t_10ms = 0;
 	static uint16_t tft_state = 0;
+	// static uint16_t tft_state = 0;
 	// 是否在刷新屏幕
 	switch(evt->evt_id) {
 		case UEVT_SYS_BOOT:
 			tftInit();
+			flash_gpio_init();
+			SPI_FLASH_TYPE = flash_reas_id(); //读取FLASH ID.
+			LOG_RAW("%d\n", SPI_FLASH_TYPE);
 			tusb_init();
 			cdc_log_init();
 			break;
@@ -157,9 +161,10 @@ void lcd_handle(uevt_t* evt) {
 			if(t_10ms % 3 == 0 && tft_state == 6) {
 				LCD_ShowPicture(0, 0, timeout_array[t_10ms / 3 % 30]);
 			}
-			// if(t_10ms % 100 == 0) {
+			if(t_10ms % 100 == 0) {
 			// 	LOG_RAW("%d\n", t_10ms / 100);
-			// }
+				LOG_RAW("%d\n", SPI_FLASH_TYPE);
+			}
 			break;
 		case UEVT_TIMER_100MS:
 			t_10ms++;
