@@ -146,10 +146,27 @@ static inline void tft_write_data(const uint16_t data) {
 	tftsetdcandcs(1, 1);
 }
 
+static void tft_gpio_init(void) {
+    gpio_init(PIN_CS);
+	gpio_init(PIN_BK);
+	gpio_init(PIN_DC);
+	gpio_init(PIN_RST);
+
+	gpio_set_dir(PIN_CS, true);
+	gpio_set_dir(PIN_BK, true);
+	gpio_set_dir(PIN_DC, true);
+	gpio_set_dir(PIN_RST, true);
+
+	// CS拉高
+	gpio_put(PIN_CS, true);
+	gpio_put(PIN_DC, true);
+}
+
+
+
 void tftInit(void) {
 	// 初始化SPI
-	user_spi_init();
-
+	tft_gpio_init();
 	// 复位屏幕
 	gpio_put(PIN_RST, false);
 	sleep_ms(100);

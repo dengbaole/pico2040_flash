@@ -3,10 +3,10 @@
 
 #include "platform.h"
 
-#define KEY1_PIN 9
-#define KEY1_GND_PIN 10
-#define KEY2_PIN 13
-#define KEY2_GND_PIN 12
+#define KEY1_PIN 1
+#define KEY1_GND_PIN 2
+#define KEY2_PIN 1
+#define KEY2_GND_PIN 2
 
 void button_init(void);
 

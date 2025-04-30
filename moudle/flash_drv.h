@@ -8,6 +8,7 @@
 #define W25Q16 	0XEF14
 #define W25Q32 	0XEF15
 #define W25Q64 	0XEF16
+#define W25Q128 0XEF17
 
 #define RANDOM_BYTE 0XFF
 
@@ -35,7 +36,7 @@
 
 
 
-#define FLASH_CS_PIN 		8
+#define FLASH_CS_PIN 		16
 
 
 

@@ -131,10 +131,11 @@ void lcd_handle(uevt_t* evt) {
 	// 是否在刷新屏幕
 	switch(evt->evt_id) {
 		case UEVT_SYS_BOOT:
+			user_spi_init();
 			tftInit();
 			flash_gpio_init();
 			SPI_FLASH_TYPE = flash_reas_id(); //读取FLASH ID.
-			LOG_RAW("%d\n", SPI_FLASH_TYPE);
+			LOG_RAW("%x\n", SPI_FLASH_TYPE);
 			tusb_init();
 			cdc_log_init();
 			break;

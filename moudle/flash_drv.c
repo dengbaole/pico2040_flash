@@ -11,10 +11,10 @@ uint16_t SPI_FLASH_TYPE = W25Q64; //默认就是25Q64
 // }
 
 uint8_t SPI_ReadWriteByte(const uint8_t data) {
-    uint8_t received = 0;
-    SPI_FLASH_CS_LOW();
+    static uint8_t received = 0;
+    // SPI_FLASH_CS_LOW();
     spi_write_read_blocking(SPI_PORT, &data, &received, 1);
-    SPI_FLASH_CS_HIGH();
+    // SPI_FLASH_CS_HIGH();
     return received;
 }
 
@@ -30,14 +30,14 @@ void flash_gpio_init(void) {
 
 
 uint16_t flash_reas_id(void) {
-	uint16_t Temp = 0;
+	uint16_t Temp = 0x00;
 	SPI_FLASH_CS_LOW();
-	SPI_ReadWriteByte(0x90);//发送读取ID命令
+	SPI_ReadWriteByte(W25X_MANUFACT_DEVICE_ID);//发送读取ID命令
 	SPI_ReadWriteByte(0x00);
 	SPI_ReadWriteByte(0x00);
 	SPI_ReadWriteByte(0x00);
-	Temp |= SPI_ReadWriteByte(0xFF) << 8;
-	Temp |= SPI_ReadWriteByte(0xFF);
+	Temp |= SPI_ReadWriteByte(0xff) << 8;
+	Temp |= SPI_ReadWriteByte(0xff);
 	SPI_FLASH_CS_HIGH();
 	return Temp;
 }
