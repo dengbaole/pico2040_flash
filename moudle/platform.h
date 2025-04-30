@@ -46,6 +46,8 @@
 #include "flash_drv.h"
 #include "button_drv.h"
 
+extern uint32_t flash_address;
+extern uint32_t picture_address;
 
 void moudle_init(void);
 
