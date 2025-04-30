@@ -49,6 +49,9 @@ void serial_receive(uint8_t const* buffer, uint16_t bufsize) {
 			if(serial_got("LOCK")) {
 				uevt_bc_e(TFT_LOCK);
 			}
+			if(serial_got("FLASH")) {
+				uevt_bc_e(FLASH_BURN);
+			}
 		} else {
 			serial_fifo[serial_wp++ & 0xF] = buffer[i];
 		}
@@ -163,8 +166,8 @@ void lcd_handle(uevt_t* evt) {
 				LCD_ShowPicture(0, 0, timeout_array[t_10ms / 3 % 30]);
 			}
 			if(t_10ms % 100 == 0) {
-			// 	LOG_RAW("%d\n", t_10ms / 100);
-				LOG_RAW("%d\n", SPI_FLASH_TYPE);
+				// 	LOG_RAW("%d\n", t_10ms / 100);
+				LOG_RAW("%x\n", SPI_FLASH_TYPE);
 			}
 			break;
 		case UEVT_TIMER_100MS:
@@ -190,6 +193,14 @@ void lcd_handle(uevt_t* evt) {
 			break;
 		case TFT_TIMEOUT:
 			tft_state = 6;
+			break;
+		case FLASH_BURN:
+			//todo 从零开始烧录图片
+			SpiFlashWrite(smoke_36_bmp.map, 0, smoke_36_bmp.h * smoke_36_bmp.w * 2);
+			SpiFlashRead(flash_buff, 0, 4096); 
+			LOG_RAW("%x ,%x\n", flash_buff[0], flash_buff[1]);
+			break;
+		default:
 			break;
 
 	}

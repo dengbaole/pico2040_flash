@@ -106,6 +106,8 @@ extern int16_t log_length;
 #define TFT_LOWPOWER (UEVT_TFT_BASE | 0x12)
 #define TFT_LOCK (UEVT_TFT_BASE | 0x14)
 
+#define UEVT_FLASH_BASE (0x0500)
+#define FLASH_BURN (UEVT_FLASH_BASE | 0x10)
 
 #define UEVT_ADC_BASE (0x0200)
 #define UEVT_ADC_TEMPERATURE_RESULT (UEVT_ADC_BASE | 0x01)

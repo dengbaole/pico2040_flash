@@ -53,7 +53,7 @@ extern uint8_t flash_buff[4096];
 void flash_gpio_init(void);
 uint16_t flash_reas_id(void);
 void flash_erase(void);
-void SpiFlashWrite(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite);
+void SpiFlashWrite(const uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite);
 void SpiFlashRead(uint8_t* pBuffer, uint32_t ReadAddr, uint16_t NumByteToRead);
 
 #endif

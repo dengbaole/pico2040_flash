@@ -11,11 +11,11 @@ uint16_t SPI_FLASH_TYPE = W25Q64; //默认就是25Q64
 // }
 
 uint8_t SPI_ReadWriteByte(const uint8_t data) {
-    static uint8_t received = 0;
-    // SPI_FLASH_CS_LOW();
-    spi_write_read_blocking(SPI_PORT, &data, &received, 1);
-    // SPI_FLASH_CS_HIGH();
-    return received;
+	static uint8_t received = 0;
+	// SPI_FLASH_CS_LOW();
+	spi_write_read_blocking(SPI_PORT, &data, &received, 1);
+	// SPI_FLASH_CS_HIGH();
+	return received;
 }
 
 void flash_gpio_init(void) {
@@ -167,7 +167,7 @@ void SpiFlashEraseSector(uint32_t Dst_Addr) {
 //WriteAddr:开始写入的地址(24bit)
 //NumByteToWrite:要写入的字节数(最大65535)
 
-void SpiFlashWrite(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite) {
+void SpiFlashWrite(const uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite) {
 	uint32_t secpos;
 	uint16_t secoff;
 	uint16_t secremain;

@@ -17,5 +17,4 @@ int main(void) {
 		cdc_task();
 		__wfi();
 	}
-	return 0;
 }

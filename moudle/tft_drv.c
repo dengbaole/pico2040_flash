@@ -147,7 +147,7 @@ static inline void tft_write_data(const uint16_t data) {
 }
 
 static void tft_gpio_init(void) {
-    gpio_init(PIN_CS);
+	gpio_init(PIN_CS);
 	gpio_init(PIN_BK);
 	gpio_init(PIN_DC);
 	gpio_init(PIN_RST);
