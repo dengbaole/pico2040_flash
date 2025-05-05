@@ -146,27 +146,27 @@ void lcd_handle(uevt_t* evt) {
 			break;
 		case UEVT_TIMER_10MS:
 			t_10ms++;
-			// if(t_10ms % 3 == 0 && tft_state == 0) {
-			// 	LCD_ShowPicture(0, 0, charge_array[t_10ms / 3 % 30]);
-			// }
-			// if(t_10ms % 3 == 0 && tft_state == 1) {
-			// 	LCD_ShowPicture(0, 0, lock_array[t_10ms / 3 % 30]);
-			// }
-			// if(t_10ms % 3 == 0 && tft_state == 2) {
-			// 	LCD_ShowPicture(0, 0, lowpower_array[t_10ms / 3 % 15]);
-			// }
-			// if(t_10ms % 3 == 0 && tft_state == 3) {
-			// 	LCD_ShowPicture(0, 0, nopod_array[t_10ms / 3 % 25]);
-			// }
-			// if(t_10ms % 3 == 0 && tft_state == 4) {
-			// 	LCD_ShowPicture(0, 0, power_on_array[t_10ms / 3 % 35]);
-			// }
-			// if(t_10ms % 3 == 0 && tft_state == 5) {
-			// 	LCD_ShowPicture(0, 0, smoke_array[t_10ms / 3 % 54]);
-			// }
-			// if(t_10ms % 3 == 0 && tft_state == 6) {
-			// 	LCD_ShowPicture(0, 0, timeout_array[t_10ms / 3 % 30]);
-			// }
+			if(t_10ms % 3 == 0 && tft_state == 0) {
+				LCD_ShowPicture(0, 0, charge_array[t_10ms / 3 % 30]);
+			}
+			if(t_10ms % 3 == 0 && tft_state == 1) {
+				LCD_ShowPicture(0, 0, lock_array[t_10ms / 3 % 30]);
+			}
+			if(t_10ms % 3 == 0 && tft_state == 2) {
+				LCD_ShowPicture(0, 0, lowpower_array[t_10ms / 3 % 15]);
+			}
+			if(t_10ms % 3 == 0 && tft_state == 3) {
+				LCD_ShowPicture(0, 0, nopod_array[t_10ms / 3 % 25]);
+			}
+			if(t_10ms % 3 == 0 && tft_state == 4) {
+				LCD_ShowPicture(0, 0, power_on_array[t_10ms / 3 % 35]);
+			}
+			if(t_10ms % 3 == 0 && tft_state == 5) {
+				LCD_ShowPicture(0, 0, smoke_array[t_10ms / 3 % 54]);
+			}
+			if(t_10ms % 3 == 0 && tft_state == 6) {
+				LCD_ShowPicture(0, 0, timeout_array[t_10ms / 3 % 30]);
+			}
 			if(t_10ms % 100 == 0) {
 				// 	LOG_RAW("%d\n", t_10ms / 100);
 				LOG_RAW("%x\n", SPI_FLASH_TYPE);
@@ -203,7 +203,7 @@ void lcd_handle(uevt_t* evt) {
 			flash_address += smoke_36_bmp.h * smoke_36_bmp.w * 2;
 			
 			
-			LOG_RAW("0x%x ,%d,%d\n",flash_address, smoke_36_bmp.w, smoke_36_bmp.h);
+			LOG_RAW("0x%x ,%d,%d\n",picture_address, smoke_36_bmp.w, smoke_36_bmp.h);
 			SpiFlashRead(flash_buff, 0, 4096); 
 			break;
 		default:
