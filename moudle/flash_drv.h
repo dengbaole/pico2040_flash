@@ -36,7 +36,7 @@
 
 
 
-#define FLASH_CS_PIN 		16
+#define FLASH_CS_PIN 		17
 
 
 
@@ -54,7 +54,10 @@ void flash_gpio_init(void);
 uint16_t flash_reas_id(void);
 void flash_erase(void);
 void SpiFlashWrite(const uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite);
+void SpiFlashWriteNoCheck(const uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite);
 void SpiFlashRead(uint8_t* pBuffer, uint32_t ReadAddr, uint16_t NumByteToRead);
+
+
 
 #endif
 
