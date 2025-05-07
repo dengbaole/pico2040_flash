@@ -421,11 +421,11 @@ void lcd_draw_flash(uint32_t addr) {
 	tftSetWindows(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1);
 
 	for(uint8_t i = 0; i < 16; i++) {
-		memset(flash_buff, 0x08 * i, sizeof(flash_buff));
-		W25Q128_ReadData(flash_buff, 1600 * i, 1600);
+		memset(sector_data, 0x08 * i, sizeof(sector_data));
+		W25Q128_ReadData(sector_data, addr + 1600 * i, 1600);
 
 		tftsetdcandcs(1, 0);
-		spi_write_blocking(SPI_PORT, flash_buff, 1600);
+		spi_write_blocking(SPI_PORT, sector_data, 1600);
 		tftsetdcandcs(1, 1);
 	}
 }

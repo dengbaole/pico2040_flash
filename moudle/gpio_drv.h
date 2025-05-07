@@ -9,8 +9,8 @@
 
 //SPI
 #define SPI_PORT     spi1
-#define SPI_BAUDRATE 1*1000*1000
-#define PIN_MISO     8
+#define SPI_BAUDRATE 42*1000*1000
+#define PIN_MISO     12
 #define PIN_CS       13
 #define PIN_SCL      10
 #define PIN_MOSI     15

@@ -140,16 +140,16 @@ void lcd_handle(uevt_t* evt) {
 			user_spi_init();
 			tftInit();
 
-			SPI_FLASH_TYPE = W25Q128_ReadID(); //读取FLASH ID.
-			LOG_RAW("%x\n", SPI_FLASH_TYPE);
+			flash_id = W25Q128_ReadID(); //读取FLASH ID.
+			LOG_RAW("%x\n", flash_id);
 			tusb_init();
 			cdc_log_init();
 			break;
 		case UEVT_TIMER_10MS:
 			t_10ms++;
-			if(t_10ms % 100 == 0 && tft_state == 0) {
+			if(t_10ms % 3 == 0 && tft_state == 0) {
 				// LCD_ShowPicture(0, 0, charge_array[t_10ms / 3 % 30]);
-				// lcd_draw_flash(0);
+				lcd_draw_flash(25600 * (t_10ms / 3 % 125));
 			}
 			// if(t_10ms % 3 == 0 && tft_state == 1) {
 			// 	LCD_ShowPicture(0, 0, lock_array[t_10ms / 3 % 30]);
@@ -170,8 +170,8 @@ void lcd_handle(uevt_t* evt) {
 			// 	LCD_ShowPicture(0, 0, timeout_array[t_10ms / 3 % 30]);
 			// }
 			if(t_10ms % 100 == 0) {
-				LOG_RAW("%d\n", t_10ms / 100);
-				// LOG_RAW("%x\n", SPI_FLASH_TYPE);
+				LOG_RAW("line1 = %d\r\n", t_10ms / 100);
+				// LOG_RAW("%x\n", flash_id);
 			}
 			break;
 		case UEVT_TIMER_100MS:
@@ -200,27 +200,43 @@ void lcd_handle(uevt_t* evt) {
 			break;
 		case FLASH_BURN: {
 			//todo 从零开始烧录图片
-			// for(uint8_t i = 0; i < 30; i++){
-			// 	const sBITMAP *charge = &charge_array[i];
-			// 	SpiFlashWrite(charge -> map, flash_address, charge -> h * charge -> w * 2);
-			// 	picture_address = flash_address;
-			// 	flash_address += charge -> h * charge -> w * 2;
+			if (flash_id != 0xEF13 && flash_id != 0xEF14 && flash_id != 0xEF15 && flash_id != 0xEF16 && flash_id != 0xEF17) {
+				LOG_RAW("flash id error\n");
+				return;
+			}
 
-			// 	LOG_RAW("0x%x ,%d,%d\n",picture_address, charge -> w, charge -> h);
-			// 	SpiFlashRead(flash_buff, 0, 2);
-			// 	LOG_RAW("%d,%d\n",flash_buff[0], flash_buff[1]);
-			// }
-			const sBITMAP* charge = charge_array[0];
-			LOG_RAW("map %d,%d\n", charge -> map[1598], charge -> map[1599]);
-			// SpiFlashWrite(charge -> map, flash_address, charge -> h * charge -> w * 2);
-			W25Q128_WriteData(charge_00_bmp.map, flash_address,  charge_00_bmp.h * charge_00_bmp.w * 2);
-			// SpiFlashWriteNoCheck(charge_00_bmp.map, flash_address,  charge_00_bmp.h * charge_00_bmp.w * 2);
-			picture_address = flash_address;
-			flash_address += charge -> h * charge -> w * 2;
-			lcd_draw_flash(0);
-			// LOG_RAW("0x%x ,%d,%d\n",picture_address, charge -> w, charge -> h);
-			// SpiFlashRead(flash_buff, 0, 20);
-			// LOG_RAW("flash %d,%d\n",flash_buff[1598], flash_buff[1599]);
+			for(uint8_t i = 0; i < 30; i++) {
+				const sBITMAP* charge = charge_array[i];
+				W25Q128_WriteData(charge -> map, flash_address, charge -> h * charge -> w * 2);
+				picture_address = flash_address;
+				flash_address += charge -> h * charge -> w * 2;
+			}
+			for(uint8_t i = 0; i < 30; i++) {
+				const sBITMAP* charge = lock_array[i];
+				W25Q128_WriteData(charge -> map, flash_address, charge -> h * charge -> w * 2);
+				picture_address = flash_address;
+				flash_address += charge -> h * charge -> w * 2;
+			}
+			for(uint8_t i = 0; i < 30; i++) {
+				const sBITMAP* charge = timeout_array[i];
+				W25Q128_WriteData(charge -> map, flash_address, charge -> h * charge -> w * 2);
+				picture_address = flash_address;
+				flash_address += charge -> h * charge -> w * 2;
+			}
+			for(uint8_t i = 0; i < 35; i++) {
+				const sBITMAP* charge = power_on_array[i];
+				W25Q128_WriteData(charge -> map, flash_address, charge -> h * charge -> w * 2);
+				picture_address = flash_address;
+				flash_address += charge -> h * charge -> w * 2;
+			}
+			// static uint8_t i = 0;
+
+			// const sBITMAP *charge = charge_array[i];
+			// W25Q128_WriteData(charge -> map, flash_address, charge -> h * charge -> w * 2);
+			// picture_address = flash_address;
+			// flash_address += charge -> h * charge -> w * 2;
+			// lcd_draw_flash(i * 25600);
+			// i++;
 		}
 		break;
 		default:
@@ -265,7 +281,7 @@ void button_handle(uevt_t* evt) {
 
 void moudle_init(void) {
 	// user_event_handler_regist(oled_handle);
-	// user_event_handler_regist(button_handle);
+	user_event_handler_regist(button_handle);
 	user_event_handler_regist(lcd_handle);
 	user_event_handler_regist(timer_handle);
 

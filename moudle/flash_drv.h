@@ -48,19 +48,13 @@
 #define SPI_FLASH_CS_LOW()  gpio_put(FLASH_CS_PIN, false);
 
 
-extern uint16_t SPI_FLASH_TYPE;
+extern uint16_t flash_id;
 
-extern uint8_t flash_buff[4096];
+extern uint8_t sector_data[4096];
 
 
 void flash_gpio_init(void);
 uint16_t W25Q128_ReadID(void);
-// void flash_erase(void);
-// void SpiFlashWrite(const uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite);
-// void SpiFlashWriteNoCheck(const uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite);
-// void SpiFlashRead(uint8_t* pBuffer, uint32_t ReadAddr, uint16_t NumByteToRead);
-
-// 函数声明
 void W25Q128_WriteEnable(void);
 void W25Q128_WaitForWriteEnd(void);
 uint8_t W25Q128_ReadStatusReg(void);

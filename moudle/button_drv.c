@@ -4,7 +4,7 @@
 void button_callback(unsigned int gpio, uint32_t events) {
 	if (gpio == KEY2_PIN && (events & GPIO_IRQ_EDGE_FALL)) {
 		// 按键2按下
-		uevt_bc_e(BUTTON2_ON);
+		uevt_bc_e(FLASH_BURN);
 	}
 	if (gpio == KEY1_PIN && (events & GPIO_IRQ_EDGE_FALL)) {
 		// 按键1按下

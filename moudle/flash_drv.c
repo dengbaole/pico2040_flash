@@ -1,7 +1,7 @@
 #include "flash_drv.h"
 
-uint8_t flash_buff[4096];
-uint16_t SPI_FLASH_TYPE = W25Q64; //默认就是25Q64
+uint8_t sector_data[4096];
+uint16_t flash_id = W25Q64; //默认就是25Q64
 
 
 // // uint8_t SPI_ReadWriteByte(const uint8_t data) {
@@ -181,16 +181,16 @@ void flash_gpio_init(void) {
 // 		secremain = NumByteToWrite; //不大于4096个字节
 // 	}
 // 	while(1) {
-// 		SpiFlashRead(flash_buff, secpos * 4096, 4096); //读出整个扇区的内容
+// 		SpiFlashRead(sector_data, secpos * 4096, 4096); //读出整个扇区的内容
 // 		for(i = 0; i < secremain; i++) { //校验数据
-// 			if(flash_buff[secoff + i] != 0XFF) {
+// 			if(sector_data[secoff + i] != 0XFF) {
 // 				break; //需要擦除
 // 			}
 // 		}
 // 		if(i < secremain) { //需要擦除
 // 			SpiFlashEraseSector(secpos);//擦除这个扇区
 // 			for(i = 0; i < secremain; i++) { //复制
-// 				flash_buff[i + secoff] = pBuffer[i];
+// 				sector_data[i + secoff] = pBuffer[i];
 // 			}
 // 			SpiFlashWriteNoCheck(pBuffer, WriteAddr, secremain); //写入整个扇区
 // 		} else {
@@ -227,16 +227,16 @@ void flash_gpio_init(void) {
 // // 		sec_remaim = NumByteToWrite; //不大于4096个字节
 // // 	}
 // // 	while(1) {
-// // 	    SpiFlashRead(flash_buff, sec_pos * 4096, 4096);
+// // 	    SpiFlashRead(sector_data, sec_pos * 4096, 4096);
 // // 		for(i = 0; i < sec_remaim; i++) { //校验数据
-// // 			if(flash_buff[sec_off + i] != 0XFF) {
+// // 			if(sector_data[sec_off + i] != 0XFF) {
 // // 				break; //需要擦除
 // // 			}
 // // 		}
 // // 		if(i < sec_remaim) { //扇区剩余空间需要擦除
 // // 			SpiFlashEraseSector(sec_pos);//擦除这个扇区
 // // 			for(i = 0; i < sec_remaim; i++) { //复制
-// // 				flash_buff[i + sec_off] = pBuffer[i];
+// // 				sector_data[i + sec_off] = pBuffer[i];
 // // 			}
 // // 			SpiFlashWriteNoCheck(pBuffer, WriteAddr, sec_remaim); //写入整个扇区
 // // 		}else{
@@ -323,6 +323,9 @@ void W25Q128_EraseSector(uint32_t addr) {
 	W25Q128_WaitForWriteEnd();
 }
 
+
+
+
 // 32K块擦除
 void W25Q128_EraseBlock32(uint32_t addr) {
 	uint8_t cmd[4];
@@ -399,42 +402,65 @@ uint8_t W25Q128_CheckErased(uint32_t addr, uint32_t len) {
 	return 1; // 已擦除
 }
 
-// 确保指定区域已擦除(必要时执行擦除)
+
+
+
 void W25Q128_EnsureErased(uint32_t addr, uint32_t len) {
-	// 检查是否已擦除
-	if(W25Q128_CheckErased(addr, len)) {
+	if (len == 0) return;
+	const uint32_t sector_size = W25Q128_SECTOR_SIZE;
+	uint32_t start_sector = addr / sector_size;
+	uint32_t end_sector = (addr + len - 1) / sector_size;
+
+	uint32_t start_offset = addr % sector_size;
+	uint32_t end_offset = (addr + len - 1) % sector_size;
+
+	// 如果整个区域已经擦除，直接返回
+	if (W25Q128_CheckErased(addr, len)) {
 		return;
 	}
 
-	// 计算需要擦除的区域
-	uint32_t start_addr = addr;
-	uint32_t end_addr = addr + len - 1;
+	// 静态缓冲区，避免栈溢出
+	static uint8_t sector_data[W25Q128_SECTOR_SIZE];
 
-	// 优先尝试64K块擦除
-	uint32_t block64_start = start_addr & ~(W25Q128_BLOCK64_SIZE - 1);
-	uint32_t block64_end = block64_start + W25Q128_BLOCK64_SIZE - 1;
+	for (uint32_t sector = start_sector; sector <= end_sector; sector++) {
+		uint32_t sector_addr = sector * sector_size;
 
-	if(end_addr <= block64_end) {
-		W25Q128_EraseBlock64(block64_start);
-		return;
-	}
+		// 计算本扇区需要擦除的范围
+		uint32_t erase_start = 0;
+		uint32_t erase_len = sector_size;
 
-	// 尝试32K块擦除
-	uint32_t block32_start = start_addr & ~(W25Q128_BLOCK32_SIZE - 1);
-	uint32_t block32_end = block32_start + W25Q128_BLOCK32_SIZE - 1;
-
-	if(end_addr <= block32_end) {
-		W25Q128_EraseBlock32(block32_start);
-		return;
-	}
-
-	// 否则使用扇区擦除
-	uint32_t sector_addr = start_addr & ~(W25Q128_SECTOR_SIZE - 1);
-	while(sector_addr <= end_addr) {
-		if(!W25Q128_CheckErased(sector_addr, W25Q128_SECTOR_SIZE)) {
-			W25Q128_EraseSector(sector_addr);
+		if (sector == start_sector) {
+			erase_start = start_offset;
+			if (start_sector == end_sector) {
+				erase_len = end_offset - start_offset + 1;
+			} else {
+				erase_len = sector_size - start_offset;
+			}
+		} else if (sector == end_sector) {
+			erase_start = 0;
+			erase_len = end_offset + 1;
+		} else {
+			// 中间完整扇区，直接擦除
+			erase_start = 0;
+			erase_len = sector_size;
 		}
-		sector_addr += W25Q128_SECTOR_SIZE;
+
+		// 检查本扇区需要擦除的区域是否已擦除
+		if (W25Q128_CheckErased(sector_addr + erase_start, erase_len)) {
+			// 本区域已擦除，跳过
+			continue;
+		}
+
+		// 如果是整扇区擦除（擦除范围覆盖整个扇区），直接擦除
+		if (erase_start == 0 && erase_len == sector_size) {
+			W25Q128_EraseSector(sector_addr);
+		} else {
+			// 读-改-写保护
+			W25Q128_ReadData(sector_data, sector_addr, sector_size);
+			memset(sector_data + erase_start, 0xFF, erase_len);
+			W25Q128_EraseSector(sector_addr);
+			W25Q128_WriteData(sector_data, sector_addr, sector_size);
+		}
 	}
 }
 
