@@ -13,22 +13,25 @@
 #define RANDOM_BYTE 0XFF
 
 
-#define W25X_WRITE_ENABLE		 0x06
-#define W25X_WRITE_DISABLE		 0x04
-#define W25X_READ_STATU_TEG		 0x05
-#define W25X_WRITE_STATUS_REG	 0x01
-#define W25X_READ_DATA			 0x03
-#define W25X_FAST_READ_DATA		 0x0B
-#define W25X_FAST_READ_DUAL		 0x3B
-#define W25X_PAGE_PROGRAM		 0x02
-#define W25X_BLOCK_ERASE		 0xD8
-#define W25X_SECTOR_ERASE		 0x20
-#define W25X_CHIP_ERASE			 0xC7
-#define W25X_POWER_DOWN			 0xB9
-#define W25X_RELEASE_POWER_DOWN	 0xAB
-#define W25X_DEVICE_ID			 0xAB
-#define W25X_MANUFACT_DEVICE_ID	 0x90
-#define W25X_JEDEC_DEVICE_ID	 0x9F
+// W25Q128指令集
+#define W25Q128_WRITE_ENABLE     0x06
+#define W25Q128_WRITE_DISABLE    0x04
+#define W25Q128_READ_DATA        0x03
+#define W25Q128_PAGE_PROGRAM     0x02
+#define W25Q128_SECTOR_ERASE     0x20
+#define W25Q128_BLOCK32_ERASE    0x52
+#define W25Q128_BLOCK64_ERASE    0xD8
+#define W25Q128_CHIP_ERASE       0xC7
+#define W25Q128_READ_ID          0x90
+#define W25Q128_READ_STATUS_REG1 0x05
+
+// Flash参数
+#define W25Q128_PAGE_SIZE        256
+#define W25Q128_SECTOR_SIZE      4096
+#define W25Q128_BLOCK32_SIZE     32768
+#define W25Q128_BLOCK64_SIZE     65536
+#define W25Q128_CHIP_SIZE        0x1000000 // 16MB
+
 
 
 
@@ -51,12 +54,24 @@ extern uint8_t flash_buff[4096];
 
 
 void flash_gpio_init(void);
-uint16_t flash_reas_id(void);
-void flash_erase(void);
-void SpiFlashWrite(const uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite);
-void SpiFlashWriteNoCheck(const uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite);
-void SpiFlashRead(uint8_t* pBuffer, uint32_t ReadAddr, uint16_t NumByteToRead);
+uint16_t W25Q128_ReadID(void);
+// void flash_erase(void);
+// void SpiFlashWrite(const uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite);
+// void SpiFlashWriteNoCheck(const uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite);
+// void SpiFlashRead(uint8_t* pBuffer, uint32_t ReadAddr, uint16_t NumByteToRead);
 
+// 函数声明
+void W25Q128_WriteEnable(void);
+void W25Q128_WaitForWriteEnd(void);
+uint8_t W25Q128_ReadStatusReg(void);
+void W25Q128_EraseSector(uint32_t addr);
+void W25Q128_EraseBlock32(uint32_t addr);
+void W25Q128_EraseBlock64(uint32_t addr);
+void W25Q128_ChipErase(void);
+void W25Q128_WriteData(const uint8_t* data, uint32_t addr, uint32_t len);
+void W25Q128_ReadData(uint8_t* data, uint32_t addr, uint32_t len);
+uint8_t W25Q128_CheckErased(uint32_t addr, uint32_t len);
+void W25Q128_EnsureErased(uint32_t addr, uint32_t len);
 
 
 #endif

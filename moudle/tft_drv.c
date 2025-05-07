@@ -414,16 +414,16 @@ void LCD_ShowPicture(uint16_t x, uint16_t y, const sBITMAP* pic) {
 
 
 //通过flash读取图片显示到屏幕上
-void lcd_draw_flash(uint32_t addr){
+void lcd_draw_flash(uint32_t addr) {
 	uint16_t i, j;
 	uint32_t k = 0;
 	k = addr;
 	tftSetWindows(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1);
 
-	for(uint8_t i = 0; i < 16; i++){
-		memset(flash_buff, 0x08*i, sizeof(flash_buff));
-		SpiFlashRead(flash_buff, 1600*i, 1600);
-		
+	for(uint8_t i = 0; i < 16; i++) {
+		memset(flash_buff, 0x08 * i, sizeof(flash_buff));
+		W25Q128_ReadData(flash_buff, 1600 * i, 1600);
+
 		tftsetdcandcs(1, 0);
 		spi_write_blocking(SPI_PORT, flash_buff, 1600);
 		tftsetdcandcs(1, 1);
