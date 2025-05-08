@@ -237,6 +237,7 @@ void lcd_handle(uevt_t* evt) {
 			// flash_address += charge -> h * charge -> w * 2;
 			// lcd_draw_flash(i * 25600);
 			// i++;
+			LOG_RAW("flash burn end!\n");
 		}
 		break;
 		default:
