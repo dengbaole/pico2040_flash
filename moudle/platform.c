@@ -152,8 +152,32 @@ void lcd_handle(uevt_t* evt) {
 			t_10ms++;
 			if(t_10ms % 3 == 0 && tft_state == 0) {
 				// LCD_ShowPicture(0, 0, charge_array[t_10ms / 3 % 30]);
-				lcd_draw_flash(25600 * (t_10ms / 3 % 125));
-				// lcd_draw_flash2(charge_array[t_10ms / 3 % 30]);
+				// lcd_draw_flash(25600 * (t_10ms / 3 % 125));
+				// lcd_draw_flash2(&flash_charge_array[t_10ms / 100 % 26]);
+				static int x = 0;
+				static int y = 0;
+				static int vx = 2;  // 水平方向速度
+				static int vy = 1;  // 垂直方向速度
+				uint8_t	index = 0;
+				 // 更新位置
+				x += vx;
+				y += vy;
+				// 边界检测和反射
+				if (x <= 0 || x >= 80 - flash_letter_array[0].w) {
+					vx = -vx;
+					x += vx;  // 防止越界
+				}
+				if (y <= 0 || y >= 160 - flash_letter_array[0].h) {
+					vy = -vy;
+					y += vy;  // 防止越界
+				}
+
+				
+				// index = display_num(index, 8,  100, torbo_num_bitmap, old_key_value);
+				index = set_display_component(index, 0, 0, &flash_charge_array[t_10ms / 3 % 30]);
+				index = set_display_component(index, x, y, &flash_letter_array[t_10ms / 30 % 26]);
+				index = set_display_component(index, 0, 0, NULL);
+				display_component(default_component);
 			}
 			// if(t_10ms % 3 == 0 && tft_state == 1) {
 			// 	LCD_ShowPicture(0, 0, lock_array[t_10ms / 3 % 30]);
@@ -212,12 +236,12 @@ void lcd_handle(uevt_t* evt) {
 			}
 			flash_write_bitmap_array(charge_array);
 			flash_write_bitmap_array(letter_array);
-			flash_write_bitmap_array(timeout_array);
-			flash_write_bitmap_array(lock_array);
-			flash_write_bitmap_array(lowpower_array);
-			flash_write_bitmap_array(nopod_array);
-			flash_write_bitmap_array(power_on_array);
-			flash_write_bitmap_array(smoke_array);
+			// flash_write_bitmap_array(timeout_array);
+			// flash_write_bitmap_array(lock_array);
+			// flash_write_bitmap_array(lowpower_array);
+			// flash_write_bitmap_array(nopod_array);
+			// flash_write_bitmap_array(power_on_array);
+			// flash_write_bitmap_array(smoke_array);
 
 
 

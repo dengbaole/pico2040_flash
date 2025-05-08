@@ -35,6 +35,7 @@
 #include "tusb_config.h"
 
 #include "bitmap.h"
+#include "flash_t_tft.h"
 #include "tft_drv.h"
 #include "gpio_drv.h"
 #include "ssd1306_i2c.h"
@@ -43,7 +44,7 @@
 #include "spi_drv.h"
 #include "timer_drv.h"
 
-#include "flash_t_tft.h"
+
 #include "oled_image.h"
 #include "tft_image.h"
 #include "flash_drv.h"

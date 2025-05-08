@@ -431,19 +431,112 @@ void lcd_draw_flash(uint32_t addr) {
 }
 
 // #include "flash_t_tft.h"
-// void lcd_draw_flash2(const FLASH_sBITMAP* pic) {
-// 	uint16_t i, j;
-// 	uint32_t k = 0;
-// 	k = pic->map_address;
-// 	tftSetWindows(0, 0, pic->w - 1, pic->h - 1);
+void lcd_draw_flash2(const FLASH_sBITMAP* pic) {
+	uint16_t i, j;
+	uint32_t k = 0;
+	k = pic->map_address;
+	tftSetWindows(0, 0, pic->w - 1, pic->h - 1);
 
-// 	for(uint8_t i = 0; i < 16; i++) {
-// 		memset(sector_data, 0x08 * i, sizeof(sector_data));
-// 		W25Q128_ReadData(sector_data, pic->map_address + 1600 * i, 1600);
+	for(uint8_t i = 0; i < 16; i++) {
+		memset(sector_data, 0x08 * i, sizeof(sector_data));
+		W25Q128_ReadData(sector_data, pic->map_address + 1600 * i, 1600);
 
-// 		tftsetdcandcs(1, 0);
-// 		spi_write_blocking(SPI_PORT, sector_data, 1600);
-// 		tftsetdcandcs(1, 1);
-// 	}
-// }
+		tftsetdcandcs(1, 0);
+		spi_write_blocking(SPI_PORT, sector_data, 1600);
+		tftsetdcandcs(1, 1);
+	}
+}
+
+uint8_t display_buff[DISPLAY_BUF_SIZE];
+uint8_t rx_buff[DISPLAY_BUF_SIZE];
+
+static uint8_t get_max(uint8_t a, uint8_t b) {
+	return a > b ? a : b;
+}
+
+static uint8_t get_min(uint8_t a, uint8_t b) {
+	return a < b ? a : b;
+}
+
+// 没有边界检测
+// 背景图放最前面
+void display_component(FLASH_sBITMAP_TABLE* bitmap_table) {
+	uint16_t current_screen_h_end = 0;
+	uint16_t current_screen_h_start = 0;
+
+	uint16_t picture_h_end = 0;
+	uint16_t picture_h_start = 0;
+
+	uint16_t draw_h_end = 0;
+	uint16_t draw_h_start = 0;
+	tftSetWindows(0, 0, DISPLAY_WIDTH - 1, DISPLAY_HEIGHT - 1);
+	for(uint16_t j = 0; j < SPLIT_SCREEN; j++) {
+		current_screen_h_start = j * DISPLAY_HEIGHT / SPLIT_SCREEN;
+		current_screen_h_end += DISPLAY_HEIGHT / SPLIT_SCREEN; //display_buff 高度 0-4行
+
+
+		memset(display_buff, 0x00, DISPLAY_BUF_SIZE);
+		// TFT_CS_HIGH();
+		for(uint8_t i = 0; bitmap_table[i].bitmap != NULL; i++) {
+			//在获取每张图片的数据
+
+			//如果图片在屏幕内，则获取数据
+			picture_h_start = bitmap_table[i].y;
+			picture_h_end = bitmap_table[i].y + bitmap_table[i].bitmap->h;
+			draw_h_start = get_max(current_screen_h_start, picture_h_start);
+			draw_h_end = get_min(current_screen_h_end, picture_h_end);
+			if(draw_h_start <= draw_h_end) {
+				//地址
+				// Read_Flash_Start(bitmap_table[i].bitmap->map_address + (draw_h_start - picture_h_start)* bitmap_table[i].bitmap->w * 2);
+				// FLASH_CS_LOW();
+				// //接收数据
+				// spi_dma_rx_date(rx_buff, (draw_h_end - draw_h_start) * bitmap_table[i].bitmap->w * 2);
+				// FLASH_CS_HIGH();
+				
+				//数据接收
+				W25Q128_ReadData(rx_buff, bitmap_table[i].bitmap->map_address + (draw_h_start - picture_h_start)* bitmap_table[i].bitmap->w * 2, (draw_h_end - draw_h_start) * bitmap_table[i].bitmap->w * 2);
+
+				if(bitmap_table[i].bitmap->h == DISPLAY_HEIGHT && bitmap_table[i].bitmap->w == DISPLAY_WIDTH) {
+					for(uint8_t k = 0; k < (draw_h_end - draw_h_start); k++) {
+						memcpy(&display_buff[(draw_h_start - current_screen_h_start + k)*DISPLAY_WIDTH * 2 + bitmap_table[i].x * 2], &rx_buff[k * bitmap_table[i].bitmap->w * 2], bitmap_table[i].bitmap->w * 2);
+					}
+				} else {
+					for(uint16_t k = 0; k < (draw_h_end - draw_h_start); k++) {
+						for(uint16_t x = 0; x < bitmap_table[i].bitmap->w; x++) {
+							// 计算源和目标索引
+							uint16_t src_index = k * bitmap_table[i].bitmap->w * 2 + x * 2;
+							uint16_t dst_index = (draw_h_start - current_screen_h_start + k) * DISPLAY_WIDTH * 2 + bitmap_table[i].x * 2 + x * 2;
+							// if (src_index + 1 >= DISPLAY_BUF_SIZE) {
+							// 	continue; // 跳过超出源缓冲区的像素
+							// }
+
+							// if (dst_index + 1 >= DISPLAY_BUF_SIZE) {
+							// 	continue; // 跳过超出目标缓冲区的像素
+							// }
+							// 读取源像素
+							// uint16_t pixel = rx_buff[src_index] | (rx_buff[src_index + 1] << 8);
+
+							// 检查是否为透明色
+							// if(pixel != 0x0000) {
+							// 复制像素到目标缓冲区
+							display_buff[dst_index] |= rx_buff[src_index];
+							display_buff[dst_index + 1] |= rx_buff[src_index + 1];
+							// }
+						}
+					}
+				}
+			}
+		}
+
+		// TFT_RS_DATA();
+		// TFT_CS_LOW();
+		// spi_dma_tx_date(display_buff, DISPLAY_BUF_SIZE);
+		// TFT_CS_HIGH();
+
+
+		tftsetdcandcs(1, 0);
+		spi_write_blocking(SPI_PORT, display_buff, DISPLAY_BUF_SIZE);
+		tftsetdcandcs(1, 1);
+	}
+}
 
