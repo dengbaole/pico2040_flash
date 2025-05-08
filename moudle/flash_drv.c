@@ -513,3 +513,27 @@ void W25Q128_ReadData(uint8_t* data, uint32_t addr, uint32_t len) {
 	spi_read_blocking(SPI_PORT, 0xFF, data, len);
 	SPI_FLASH_CS_HIGH();
 }
+
+
+void flash_write_bitmap_array_impl(const char* name, const void* array[], uint8_t count) {
+	static uint32_t flash_address = 0;
+	uart_printf("FLASH_sBITMAP flash_%s[%d] = {\n", name, count);
+	for (uint8_t i = 0; i < count; i++) {
+		const sBITMAP* bmp = array[i];
+		if (!bmp) continue;
+
+		const uint32_t data_size = (uint32_t)(bmp->h) * bmp->w * 2;
+		const uint32_t current_addr = flash_address;
+
+		W25Q128_WriteData(bmp->map, current_addr, data_size);
+		flash_address += data_size;
+
+		uart_printf("%d, %d, 0x%x,\n",
+					bmp->w, bmp->h, current_addr);
+	}
+	uart_printf("};\n");
+}
+
+// 对外暴露的宏定义
+#define flash_write_bitmap_array(array) \
+	flash_write_bitmap_array_impl(#array, array, sizeof(array)/sizeof(array[0]))

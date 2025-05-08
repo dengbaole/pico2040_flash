@@ -58,8 +58,8 @@ pico_set_program_name(pico2040 "pico2040")
 pico_set_program_version(pico2040 "0.1")
 
 # 启用/禁用标准输入输出
-pico_enable_stdio_usb(pico2040 1)   # 启用 USB 作为 stdio
-pico_enable_stdio_uart(pico2040 0)  # 禁用 UART 作为 stdio
+pico_enable_stdio_usb(pico2040 0)   # 启用 USB 作为 stdio
+pico_enable_stdio_uart(pico2040 1)  # 禁用 UART 作为 stdio
 
 # 添加头文件路径
 target_include_directories(pico2040 PRIVATE

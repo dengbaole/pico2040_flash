@@ -430,3 +430,20 @@ void lcd_draw_flash(uint32_t addr) {
 	}
 }
 
+// #include "flash_t_tft.h"
+// void lcd_draw_flash2(const FLASH_sBITMAP* pic) {
+// 	uint16_t i, j;
+// 	uint32_t k = 0;
+// 	k = pic->map_address;
+// 	tftSetWindows(0, 0, pic->w - 1, pic->h - 1);
+
+// 	for(uint8_t i = 0; i < 16; i++) {
+// 		memset(sector_data, 0x08 * i, sizeof(sector_data));
+// 		W25Q128_ReadData(sector_data, pic->map_address + 1600 * i, 1600);
+
+// 		tftsetdcandcs(1, 0);
+// 		spi_write_blocking(SPI_PORT, sector_data, 1600);
+// 		tftsetdcandcs(1, 1);
+// 	}
+// }
+

@@ -24,9 +24,11 @@
 #include "hardware/clocks.h"
 #include "hardware/spi.h"
 #include "hardware/pwm.h"
+#include "hardware/uart.h"
 
 #include "scheduler/uevent.h"
 #include "scheduler/scheduler.h"
+
 
 #include "tusb.h"
 #include "usb_func.h"
@@ -41,10 +43,13 @@
 #include "spi_drv.h"
 #include "timer_drv.h"
 
+#include "flash_t_tft.h"
 #include "oled_image.h"
 #include "tft_image.h"
 #include "flash_drv.h"
 #include "button_drv.h"
+#include "uart_drv.h"
+
 
 extern uint32_t flash_address;
 extern uint32_t picture_address;

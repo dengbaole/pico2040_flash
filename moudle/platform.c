@@ -7,8 +7,7 @@
 	int16_t log_length;
 #endif
 
-uint32_t flash_address = 0;
-uint32_t picture_address = 0;
+
 
 
 
@@ -59,6 +58,9 @@ void serial_receive(uint8_t const* buffer, uint16_t bufsize) {
 		}
 	}
 }
+
+
+
 
 
 void oled_handle(uevt_t* evt) {
@@ -139,17 +141,19 @@ void lcd_handle(uevt_t* evt) {
 			flash_gpio_init();
 			user_spi_init();
 			tftInit();
-
+			user_uart_init();
 			flash_id = W25Q128_ReadID(); //读取FLASH ID.
-			LOG_RAW("%x\n", flash_id);
-			tusb_init();
-			cdc_log_init();
+			uart_printf("%x\n", flash_id);
+			// LOG_RAW("%x\n", flash_id);
+			// tusb_init();
+			// cdc_log_init();
 			break;
 		case UEVT_TIMER_10MS:
 			t_10ms++;
 			if(t_10ms % 3 == 0 && tft_state == 0) {
 				// LCD_ShowPicture(0, 0, charge_array[t_10ms / 3 % 30]);
 				lcd_draw_flash(25600 * (t_10ms / 3 % 125));
+				// lcd_draw_flash2(charge_array[t_10ms / 3 % 30]);
 			}
 			// if(t_10ms % 3 == 0 && tft_state == 1) {
 			// 	LCD_ShowPicture(0, 0, lock_array[t_10ms / 3 % 30]);
@@ -170,7 +174,7 @@ void lcd_handle(uevt_t* evt) {
 			// 	LCD_ShowPicture(0, 0, timeout_array[t_10ms / 3 % 30]);
 			// }
 			if(t_10ms % 100 == 0) {
-				LOG_RAW("line1 = %d\r\n", t_10ms / 100);
+				// LOG_RAW("line1 = %d\r\n", t_10ms / 100);
 				// LOG_RAW("%x\n", flash_id);
 			}
 			break;
@@ -200,44 +204,24 @@ void lcd_handle(uevt_t* evt) {
 			break;
 		case FLASH_BURN: {
 			//todo 从零开始烧录图片
+
+
 			if (flash_id != 0xEF13 && flash_id != 0xEF14 && flash_id != 0xEF15 && flash_id != 0xEF16 && flash_id != 0xEF17) {
 				LOG_RAW("flash id error\n");
 				return;
 			}
+			flash_write_bitmap_array(charge_array);
+			flash_write_bitmap_array(letter_array);
+			flash_write_bitmap_array(timeout_array);
+			flash_write_bitmap_array(lock_array);
+			flash_write_bitmap_array(lowpower_array);
+			flash_write_bitmap_array(nopod_array);
+			flash_write_bitmap_array(power_on_array);
+			flash_write_bitmap_array(smoke_array);
 
-			for(uint8_t i = 0; i < 30; i++) {
-				const sBITMAP* charge = charge_array[i];
-				W25Q128_WriteData(charge -> map, flash_address, charge -> h * charge -> w * 2);
-				picture_address = flash_address;
-				flash_address += charge -> h * charge -> w * 2;
-			}
-			for(uint8_t i = 0; i < 30; i++) {
-				const sBITMAP* charge = lock_array[i];
-				W25Q128_WriteData(charge -> map, flash_address, charge -> h * charge -> w * 2);
-				picture_address = flash_address;
-				flash_address += charge -> h * charge -> w * 2;
-			}
-			for(uint8_t i = 0; i < 30; i++) {
-				const sBITMAP* charge = timeout_array[i];
-				W25Q128_WriteData(charge -> map, flash_address, charge -> h * charge -> w * 2);
-				picture_address = flash_address;
-				flash_address += charge -> h * charge -> w * 2;
-			}
-			for(uint8_t i = 0; i < 35; i++) {
-				const sBITMAP* charge = power_on_array[i];
-				W25Q128_WriteData(charge -> map, flash_address, charge -> h * charge -> w * 2);
-				picture_address = flash_address;
-				flash_address += charge -> h * charge -> w * 2;
-			}
-			// static uint8_t i = 0;
 
-			// const sBITMAP *charge = charge_array[i];
-			// W25Q128_WriteData(charge -> map, flash_address, charge -> h * charge -> w * 2);
-			// picture_address = flash_address;
-			// flash_address += charge -> h * charge -> w * 2;
-			// lcd_draw_flash(i * 25600);
-			// i++;
-			LOG_RAW("flash burn end!\n");
+
+			uart_printf("flash burn end!\n");
 		}
 		break;
 		default:

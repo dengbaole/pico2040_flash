@@ -31,4 +31,6 @@ void tftdrawarray(uint16_t* src, size_t len);
 void tft_set_bl_brightness(uint16_t brightness);
 void LCD_ShowPicture(uint16_t x, uint16_t y, const sBITMAP* pic);
 void lcd_draw_flash(uint32_t addr);
+// #include "flash_t_tft.h"
+// void lcd_draw_flash2(const FLASH_sBITMAP* pic);
 #endif // !1

@@ -66,7 +66,10 @@ void W25Q128_WriteData(const uint8_t* data, uint32_t addr, uint32_t len);
 void W25Q128_ReadData(uint8_t* data, uint32_t addr, uint32_t len);
 uint8_t W25Q128_CheckErased(uint32_t addr, uint32_t len);
 void W25Q128_EnsureErased(uint32_t addr, uint32_t len);
+void flash_write_bitmap_array_impl(const char* name, const void* array[], uint8_t count);
 
+#define flash_write_bitmap_array(array) \
+	flash_write_bitmap_array_impl(#array, array, sizeof(array)/sizeof(array[0]))
 
 #endif
 
