@@ -141,12 +141,14 @@ void lcd_handle(uevt_t* evt) {
 			flash_gpio_init();
 			user_spi_init();
 			tftInit();
+			led_init();
 			user_uart_init();
 			flash_id = W25Q128_ReadID(); //读取FLASH ID.
 			uart_printf("%x\n", flash_id);
 			// LOG_RAW("%x\n", flash_id);
 			// tusb_init();
 			// cdc_log_init();
+
 			break;
 		case UEVT_TIMER_10MS:
 			t_10ms++;
@@ -234,6 +236,7 @@ void lcd_handle(uevt_t* evt) {
 				LOG_RAW("flash id error\n");
 				return;
 			}
+			LED_OFF();
 			flash_write_bitmap_array(charge_array);
 			flash_write_bitmap_array(letter_array);
 			// flash_write_bitmap_array(timeout_array);
@@ -242,6 +245,7 @@ void lcd_handle(uevt_t* evt) {
 			// flash_write_bitmap_array(nopod_array);
 			// flash_write_bitmap_array(power_on_array);
 			// flash_write_bitmap_array(smoke_array);
+			LED_ON();
 
 
 

@@ -50,6 +50,7 @@
 #include "flash_drv.h"
 #include "button_drv.h"
 #include "uart_drv.h"
+#include "led_drv.h"
 
 
 extern uint32_t flash_address;
