@@ -514,9 +514,9 @@ void W25Q128_ReadData(uint8_t* data, uint32_t addr, uint32_t len) {
 	SPI_FLASH_CS_HIGH();
 }
 
-
+uint32_t flash_address = 0;
 void flash_write_bitmap_array_impl(const char* name, const void* array[], uint8_t count) {
-	static uint32_t flash_address = 0;
+	
 	uart_printf("FLASH_sBITMAP flash_%s[%d] = {\n", name, count);
 	for (uint8_t i = 0; i < count; i++) {
 		const sBITMAP* bmp = array[i];

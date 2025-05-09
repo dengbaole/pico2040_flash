@@ -51,7 +51,7 @@
 extern uint16_t flash_id;
 
 extern uint8_t sector_data[4096];
-
+extern uint32_t flash_address;
 
 void flash_gpio_init(void);
 uint16_t W25Q128_ReadID(void);

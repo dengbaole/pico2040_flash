@@ -176,7 +176,7 @@ void lcd_handle(uevt_t* evt) {
 
 				
 				// index = display_num(index, 8,  100, torbo_num_bitmap, old_key_value);
-				index = set_display_component(index, 0, 0, &flash_charge_array[t_10ms / 3 % 30]);
+				index = set_display_component(index, 0, 0, &flash_timeout_array[t_10ms / 3 % 30]);
 				index = set_display_component(index, x, y, &flash_letter_array[t_10ms / 30 % 26]);
 				index = set_display_component(index, 0, 0, NULL);
 				display_component(default_component);
@@ -233,23 +233,20 @@ void lcd_handle(uevt_t* evt) {
 
 
 			if (flash_id != 0xEF13 && flash_id != 0xEF14 && flash_id != 0xEF15 && flash_id != 0xEF16 && flash_id != 0xEF17) {
-				LOG_RAW("flash id error\n");
-				return;
+				uart_printf("flash id error  = 0x%x\n",flash_id);
 			}
 			LED_OFF();
 			flash_write_bitmap_array(charge_array);
 			flash_write_bitmap_array(letter_array);
-			// flash_write_bitmap_array(timeout_array);
-			// flash_write_bitmap_array(lock_array);
-			// flash_write_bitmap_array(lowpower_array);
-			// flash_write_bitmap_array(nopod_array);
-			// flash_write_bitmap_array(power_on_array);
-			// flash_write_bitmap_array(smoke_array);
+			flash_write_bitmap_array(timeout_array);
+			flash_write_bitmap_array(lock_array);
+			flash_write_bitmap_array(lowpower_array);
+			flash_write_bitmap_array(nopod_array);
+			flash_write_bitmap_array(power_on_array);
+			flash_write_bitmap_array(smoke_array);
 			LED_ON();
-
-
-
-			uart_printf("flash burn end!\n");
+			flash_address = 0;
+			uart_printf("flash burn end! flash id  = 0x%x\n",flash_id);
 		}
 		break;
 		default:
