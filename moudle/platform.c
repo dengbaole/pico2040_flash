@@ -67,7 +67,7 @@ void oled_handle(uevt_t* evt) {
 	static uint16_t t_10ms = 0;
 	static uint8_t dino_1_h = 8;
 	static uint8_t dino_2_h  = 8;
-	static uint8_t display_num = 0;
+	static uint8_t display_num_oled = 0;
 	// 是否在刷新屏幕
 	switch(evt->evt_id) {
 		case UEVT_SYS_BOOT:
@@ -99,7 +99,7 @@ void oled_handle(uevt_t* evt) {
 					dino_2_h++;
 				}
 				oled_clean_buff();
-				oled_draw(0, 0, font_5H_num_array[display_num]);
+				oled_draw(0, 0, font_5H_num_array[display_num_oled]);
 				oled_draw(2, dino_2_h, &dino_front_leg_bmp);
 				oled_update();
 			}
@@ -111,7 +111,7 @@ void oled_handle(uevt_t* evt) {
 					dino_2_h++;
 				}
 				oled_clean_buff();
-				oled_draw(0, 0, font_5H_num_array[display_num]);
+				oled_draw(0, 0, font_5H_num_array[display_num_oled]);
 				oled_draw(2, dino_2_h, &dino_back_leg_bmp);
 				oled_update();
 			}
@@ -121,11 +121,11 @@ void oled_handle(uevt_t* evt) {
 			break;
 		case BUTTON1_ON:
 			dino_1_h = 0;
-			display_num = 1;
+			display_num_oled = 1;
 			break;
 		case BUTTON2_ON:
 			dino_2_h = 0;
-			display_num = 2;
+			display_num_oled = 2;
 			break;
 	}
 }
@@ -177,12 +177,13 @@ void lcd_handle(uevt_t* evt) {
 				
 				// index = display_num(index, 8,  100, torbo_num_bitmap, old_key_value);
 				index = set_display_component(index, 0, 0, &flash_timeout_array[t_10ms / 3 % 30]);
+				index = display_num(index,0,0,flash_nos_9_12_array,t_10ms / 3 % 999);
 				index = set_display_component(index, x, y, &flash_letter_array[t_10ms / 30 % 26]);
 				index = set_display_component(index, 0, 0, NULL);
 				display_component(default_component);
 			}
-			// if(t_10ms % 3 == 0 && tft_state == 1) {
-			// 	LCD_ShowPicture(0, 0, lock_array[t_10ms / 3 % 30]);
+			// if(t_10ms % 100 == 0) {
+			// 	LCD_ShowPicture(0, 0, nos_9_12_array[t_10ms / 100 % 10]);
 			// }
 			// if(t_10ms % 3 == 0 && tft_state == 2) {
 			// 	LCD_ShowPicture(0, 0, lowpower_array[t_10ms / 3 % 15]);
@@ -238,6 +239,8 @@ void lcd_handle(uevt_t* evt) {
 			LED_OFF();
 			flash_write_bitmap_array(charge_array);
 			flash_write_bitmap_array(letter_array);
+			flash_write_bitmap_array(turbo_9_12_array);
+			flash_write_bitmap_array(nos_9_12_array);
 			flash_write_bitmap_array(timeout_array);
 			flash_write_bitmap_array(lock_array);
 			flash_write_bitmap_array(lowpower_array);

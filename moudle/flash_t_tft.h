@@ -8,6 +8,8 @@
 extern FLASH_sBITMAP flash_charge_array[30];
 extern FLASH_sBITMAP flash_letter_array[26];
 extern FLASH_sBITMAP flash_timeout_array[30];
+extern FLASH_sBITMAP flash_turbo_9_12_array[10];
+extern FLASH_sBITMAP flash_nos_9_12_array[10];
 extern FLASH_sBITMAP flash_lock_array[30];
 extern FLASH_sBITMAP flash_lowpower_array[15];
 extern FLASH_sBITMAP flash_nopod_array[25];
