@@ -15,6 +15,7 @@ extern FLASH_sBITMAP flash_lowpower_array[15];
 extern FLASH_sBITMAP flash_nopod_array[25];
 extern FLASH_sBITMAP flash_power_on_array[35];
 extern FLASH_sBITMAP flash_smoke_array[54];
+extern FLASH_sBITMAP flash_power_off_array[1];
 
 extern FLASH_sBITMAP_TABLE default_component[25];
 uint8_t set_display_component(uint8_t index, uint8_t x, uint8_t y, FLASH_sBITMAP* bitmap);

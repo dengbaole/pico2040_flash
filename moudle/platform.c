@@ -237,16 +237,17 @@ void lcd_handle(uevt_t* evt) {
 				uart_printf("flash id error  = 0x%x\n",flash_id);
 			}
 			LED_OFF();
-			flash_write_bitmap_array(charge_array);
-			flash_write_bitmap_array(letter_array);
-			flash_write_bitmap_array(turbo_9_12_array);
-			flash_write_bitmap_array(nos_9_12_array);
-			flash_write_bitmap_array(timeout_array);
-			flash_write_bitmap_array(lock_array);
-			flash_write_bitmap_array(lowpower_array);
-			flash_write_bitmap_array(nopod_array);
-			flash_write_bitmap_array(power_on_array);
-			flash_write_bitmap_array(smoke_array);
+			// flash_write_bitmap_array(charge_array);
+			// flash_write_bitmap_array(timeout_array);
+			// flash_write_bitmap_array(lock_array);
+			// flash_write_bitmap_array(lowpower_array);
+			// flash_write_bitmap_array(nopod_array);
+			// flash_write_bitmap_array(power_on_array);
+			// flash_write_bitmap_array(smoke_array);
+ 			// flash_write_bitmap_array(power_off_array);
+			// flash_write_bitmap_array(letter_array);
+			// flash_write_bitmap_array(turbo_9_12_array);
+			// flash_write_bitmap_array(nos_9_12_array);
 			LED_ON();
 			flash_address = 0;
 			uart_printf("flash burn end! flash id  = 0x%x\n",flash_id);
